@@ -1,13 +1,13 @@
 from Tile import Tile
 from Animal import Animal
+from Visualization import Visualization
 import random
 import math
-from scipy.stats import bernoulli
 import numpy as np
-from Animal import Animal
 from Animal import Predator
 from Animal import Prey
 import copy
+import matplotlib.pyplot as plt
 
 # different dictionaries for each variable and then
 # we pass in a coordinate to determine what is there
@@ -32,6 +32,10 @@ class Map:
                     for j in range(self.size_y)]
         self.river_maker()
         self.pond_maker()
+        self.pond_maker()
+        self.pond_maker()
+
+        #self.create_graph()
 
         self.IDtoAnimal = {}
         self.IDtoLoc = {}  # dictionary from animal IDs to locations
@@ -39,8 +43,13 @@ class Map:
         ]  # list of animal ID's: specifies order of action
         self.current_index = 0
         self.next_order = []
+        self.predator_count = []
+        self.prey_count = []
+        self.predator_count.append(self.getNumPredators())
+        self.prey_count.append(self.getNumPrey())
 
         self.initialize_animals()
+        self.generate_initial_plants()
 
     def convertIDtoLoc(self, animal_id):
         return self.IDtoLoc[animal_id]
@@ -58,59 +67,67 @@ class Map:
     # function that makes a sine function that we
     # can pass back to tile to make curvy rivers
     def river_maker(self):
-        coef = [random.random() for i in range(4)] 
-        if(coef[3] > 0.75):
+        coef = [random.random() for i in range(4)]
+        if (coef[3] > 0.75):
             coef[3] = coef[3] - 0.5
-        if(coef[3] < 0.25):
+        if (coef[3] < 0.25):
             coef[3] = coef[3] + 0.5
-        if(coef[0] < 0.5):
+        if (coef[0] < 0.5):
             coef[0] = coef[0] + 0.5
         for i in range(self.size_y):
             #j = 0
             #j = random.choice(range(self.size_x))
-            j = int(3*coef[0] * (math.sin(coef[1] * i + coef[2])) + coef[3]* self.size_x)
-            if(j >= 0 and j < self.size_x):
+            j = int(3 * coef[0] * (math.sin(coef[1] * i + coef[2])) +
+                    coef[3] * self.size_x)
+            if (j >= 0 and j < self.size_x):
                 self.map[i][j].set_water()
+
         #return
-      
+
     def pond_maker(self):
         # generate random spot for pond
         x_cord = int(random.randint(0, self.size_x - 8))
         y_cord = int(random.randint(0, self.size_y - 8))
-      
+
         # size - height (5-8), width (5-8)
-        height = int(random.randint(5,8))
-        width = int(random.randint(5,8))
+        height = int(random.randint(5, 8))
+        width = int(random.randint(5, 8))
 
         for i in range(width):
             # generating extra dimensions so pond isn't square
-            shift = int(random.randint(-2,2))
+            shift = int(random.randint(-2, 2))
             for j in range(height):
-                self.map[y_cord+i][x_cord+j + shift].set_water()
-        
+                self.map[y_cord + i][x_cord + j + shift].set_water()
 
-    def generate_food(self):
-        for i in range(self.size_y):
-            for j in range(self.size_x):
+    def generate_initial_plants(self):
+        self.generate_plants(.85)
+        return
+
+    def generate_plants(self, threshhold=.99):
+        # if t = 0, use 0.90 for p threshoold. otherwise use 0.99
+        for i in range(self.size_x):
+            for j in range(self.size_y):
                 if (self.currTemp >= 40 and self.currTemp <= 80) and (
-                        self.map[i][j].get_terrain() == "E"):
-                    p = 0.5
-                    newfood = bernoulli(p)
-                    if newfood == 1:
-                        self.map[j][i].set_food()
-                        print("food generated at: (" + str(j) + "," + str(i) +
-                              ")")
-            return
+                        self.map[j][i].get_terrain() == "E"):
+                    #gets random number between 0 and 1
+                    p = random.random()
 
-    def delete_food(self, loc):
+                    if p > threshhold:
+                        self.map[j][i].set_plant()
+
+        return
+
+    def delete_plant(self, loc):
         tile = self.convertIDtoTile(loc)
-        tile.totalFood = tile.totalFood - 1
+        tile.totalPlants = tile.totalPlants - 1
         tile.food = False
         return
 
     def initialize_animals(self):
         for i in range(self.size_x):
             for j in range(self.size_y):
+                if self.map[j][i].has_water:
+                    continue
                 p1 = .1
                 p2 = 0.05
                 newpredator = (np.random.rand() < p1)  #bernoulli(p1)
@@ -199,17 +216,24 @@ class Map:
 
         return
 
-    def getNearbyFood(self, animalID):
+    def getNearbyPlants(self, animalID):
         loc = self.convertIDtoLoc(animalID)
         locs_with_food = []
-        search_dist = 1
-        for i in range(loc[0] - search_dist, loc[1] + search_dist):
-            for j in range(loc[0] - search_dist, loc[1] + search_dist):
-                if self.locToTile((i, j)).has_food == True:
+        # search distance
+        search_dist = 20
+        min_x = max(0, loc[0] - search_dist)
+        max_x = min(self.size_x, loc[0] + search_dist + 1)
+        min_y = max(0, loc[1] - search_dist)
+        max_y = min(self.size_y, loc[1] + search_dist + 1)
+        for i in range(min_x, max_x):
+            for j in range(min_y, max_y):
+                if self.locToTile((i, j)).has_plant == True:
                     locs_with_food.append((i, j))
+
         return locs_with_food
 
     def getNearbyPredators(self, animalID):
+        #TODO: FIX
         loc = self.convertIDtoLoc(animalID)
         locs_with_predators = []
         x = loc[0]
@@ -222,12 +246,14 @@ class Map:
         return locs_with_predators
 
     def getNearbyPrey(self, animalID):
+        #TODO: FIX
         loc = self.convertIDtoLoc(animalID)
         locs_with_prey = []
         x = loc[0]
         y = loc[1]
-        for i in range(x - 1, x + 1):
-            for j in range(y - 1, y + 1):
+        search_range = 1
+        for i in range(x - search_range, x + search_range):
+            for j in range(y - search_range, y + search_range):
                 if self.map[j][i].is_prey():
                     locs_with_prey.append((i % self.size_x, j % self.size_y))
         return locs_with_prey
@@ -235,11 +261,17 @@ class Map:
     def getNearbyWater(self, animalID):
         loc = self.convertIDtoLoc(animalID)
         locs_with_water = []
-        search_dist = 1
-        for i in range(loc[0] - search_dist, loc[0] + search_dist):
-            for j in range(loc[1] - search_dist, loc[1] + search_dist):
+        # search distance
+        search_dist = 20
+        min_x = max(0, loc[0] - search_dist)
+        max_x = min(self.size_x, loc[0] + search_dist + 1)
+        min_y = max(0, loc[1] - search_dist)
+        max_y = min(self.size_y, loc[1] + search_dist + 1)
+        for i in range(min_x, max_x):
+            for j in range(min_y, max_y):
                 if self.locToTile((i, j)).has_water == True:
                     locs_with_water.append((i, j))
+
         return locs_with_water
 
     def getTemp(self):
@@ -263,3 +295,18 @@ class Map:
 
     def getNumPrey(self):
         return self.numPrey
+
+    def create_graph(self):
+        x_axis = []
+        for i in range(0, 101):
+            if (i % 2 == 0):
+                x_axis.append(i)
+
+        plt.plot(self.predator_count, label="Predator Count")
+        plt.plot(self.prey_count, label="Prey Count")
+        plt.legend(loc="upper left")
+        plt.title("Population Distribution")
+        plt.xlabel("Time")
+        plt.ylabel("Population")
+        #plt.ylim([0,100])
+        plt.show()

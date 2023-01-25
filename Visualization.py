@@ -1,6 +1,7 @@
 import pygame
 
 
+
 class Visualization:
 
     def __init__(self, mapSize=(300, 200)):
@@ -52,6 +53,10 @@ class Visualization:
         self.plant.blit(image, (0, 0), dest)
         self.tiles.append(self.plant)
 
+        
+
+        
+
         def convert_to_pixels(self, loc):
             if type(loc) == int:
                 return loc * 16
@@ -84,5 +89,10 @@ class Visualization:
                     self.screen.blit(self.plant, (set * 16, object * 16))
                 elif (map[set][object] == "dirt"):
                     self.screen.blit(self.dirt, (set * 16, object * 16))
-
+        
+        
         pygame.display.flip()
+
+
+
+    #def update_graph(self, numPredators, numPrey):

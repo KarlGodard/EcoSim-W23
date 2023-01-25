@@ -47,13 +47,14 @@ class Simulation():
             animal_sr = SensoryRange()
 
             #get data surrounding animal
-            nearby_food = self.map.getNearbyFood(animal)
-            animal_sr.setNearbyFood(nearby_food)
+            nearby_plants = self.map.getNearbyPlants(animal)
+            animal_sr.setNearbyPlants(nearby_plants)
             nearby_predators = self.map.getNearbyPredators(animal)
             nearby_prey = self.map.getNearbyPrey(animal)
             animal_sr.setNearbyPredators(nearby_predators)
             animal_sr.setNearbyPrey(nearby_prey)
             nearby_tiles = self.map.getNearbyWater(animal)
+
             animal_sr.setNearbyWater(nearby_tiles)
             temp = self.map.getTemp()
             animal_sr.setTemp(temp)
@@ -99,11 +100,10 @@ class Simulation():
             animal = self.map.getNextAnimal()
 
         #Food
-        self.map.generate_food()
+        self.map.generate_plants()
 
         #Other Miscellanous
         #self.map.environmental_change()
-
 
     def visualize(self):
         animalMap = []
@@ -114,7 +114,7 @@ class Simulation():
                     rowData.append("prey")
                 elif tile.is_pred():
                     rowData.append("pred")
-                elif tile.has_food:
+                elif tile.has_plant:
                     rowData.append("plant")
                 elif tile.has_water:
                     rowData.append("water")
@@ -125,7 +125,11 @@ class Simulation():
 
         ## update visualization here
         self.visualization.update_map(animalMap)
-        time.sleep(2)
+        self.map.predator_count.append(self.map.getNumPredators())
+        self.map.prey_count.append(self.map.getNumPrey())
+
+        ## Time before switching screens
+        pygame.time.wait(500)
 
     def run_simulation(self):
 
@@ -133,7 +137,6 @@ class Simulation():
         num_prey = [self.map.getNumPrey()]
         time_graph = [0]
 
-        
         self.visualize()
 
         t = 0
@@ -150,3 +153,5 @@ class Simulation():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+
+        self.map.create_graph()

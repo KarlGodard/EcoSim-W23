@@ -1,11 +1,16 @@
 class SensoryRange:
-    def __init__(self, nearbyAnimals=[], nearbyFood=[],nearbyWater=[], temp=-1):
+
+    def __init__(self,
+                 nearbyAnimals=[],
+                 nearbyPlants=[],
+                 nearbyWater=[],
+                 temp=-1):
 
         self.temp = temp
-        self.nearbyPredators = [] # list of predator animal objects
-        self.nearbyPrey = [] # list of predator animal objects
-        self.nearbyFood = nearbyFood # coordinate of nearest food
-        self.nearbyWater = nearbyWater # coordinate of nearest water
+        self.nearbyPredators = []  # list of predator animal objects
+        self.nearbyPrey = []  # list of predator animal objects
+        self.nearbyPlants = nearbyPlants  # coordinate of nearest food
+        self.nearbyWater = nearbyWater  # coordinate of nearest water
 
     def setNearbyPredators(self, preds):
         self.nearbyPredators = preds
@@ -13,15 +18,14 @@ class SensoryRange:
     def setNearbyPrey(self, prey):
         self.nearbyPrey = prey
 
-    def setNearbyFood(self, loc):
-        self.nearestFood = loc
+    def setNearbyPlants(self, loc):
+        self.nearbyPlants = loc
 
     def setNearbyWater(self, loc):
-        self.nearestWater = loc
+        self.nearbyWater = loc
 
     def setTemp(self, temp):
         self.temp = temp
-
 
     def getNearbyPredators(self):
         return self.nearbyPredators
@@ -29,8 +33,8 @@ class SensoryRange:
     def getNearbyPrey(self):
         return self.nearbyPrey
 
-    def getNearbyFood(self):
-        return self.nearbyFood
+    def getNearbyPlants(self):
+        return self.nearbyPlants
 
     def getNearbyWater(self):
         return self.nearbyWater

@@ -1,16 +1,16 @@
 
 class Tile:
-    def __init__(self, temp=60, terrain="E", water=False, food=False):
+    def __init__(self, temp=60, terrain="E", water=False, plant=False):
         self.terrain = terrain
         self.occupied = False
         self.animal = False
         # this is in Fahrenheit because we are Americans
         self.temp = temp
         self.has_water = water
-        self.has_food = food
+        self.has_plant = plant
         self.has_pred = 0
         self.has_prey = 0
-        self.totalFood = 0
+        self.totalPlants = 0
 
     def get_terrain(self):
         return self.terrain
@@ -22,7 +22,7 @@ class Tile:
         elif self.has_prey:
             self.occupied = True
             return "p"
-        elif self.has_food:
+        elif self.has_plant:
             self.occupied = True
             return "F"
         else:
@@ -31,28 +31,16 @@ class Tile:
     # this is a bigger function to just search what lives there
 
     def is_pred(self):
-        if self.has_pred:
-            return True
-        else:
-            return False
+        return self.has_pred
 
     def is_prey(self):
-        if self.has_prey:
-            return True
-        else:
-            return False
+        return self.has_prey
 
-    def is_food(self):
-        if self.has_food:
-            return True
-        else:
-            return False
+    def is_plant(self):
+        return self.has_plant
 
     def is_water(self):
-        if self.has_water:
-            return True
-        else:
-            return False
+        return self.has_water
 
     def set_water(self):
         self.has_water = True
@@ -60,9 +48,9 @@ class Tile:
         self.terrain = "W"
         return
 
-    def set_food(self):
-        self.has_food = True
-        self.totalFood = self.totalFood + 1
+    def set_plant(self):
+        self.has_plant = True
+        self.totalPlants = self.totalPlants + 1
         self.occupied = True
         self.terrain = "F"
         return
@@ -82,9 +70,5 @@ class Tile:
         return
 
     def is_animal(self):
-        if self.is_predator == True:
-            return True
-        elif self.is_prey == True:
-            return True
-        else: return False
+        return self.is_predator or self.is_prey
 

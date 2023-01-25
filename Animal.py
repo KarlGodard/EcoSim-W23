@@ -48,7 +48,7 @@ class Animal:
     def random_move(self, invalid_locs=[]):
         dx = random.choice([-1, 0, 1])
         dy = random.choice([-1, 0, 1])
-    
+
         while (dx + self.position_x, dy + self.position_y) in invalid_locs:
             dx = random.choice([-1, 0, 1])
             dy = random.choice([-1, 0, 1])
@@ -68,12 +68,12 @@ class Animal:
 
     def eatPlant(self, surroundings):
         # nearbyFood is coordinate of nearest plant
-        nearbyFood = surroundings.getNearbyFood()
-        if nearbyFood == None:
+        nearbyPlants = surroundings.getNearbyPlants()
+        if nearbyPlants == None:
             # returns None if cannot eat plant
             return None
         else:
-            return [nearbyFood[0], 2]
+            return [nearbyPlants[0], 2]
             """
             canEat = True
             preds = surroundings.getNearbyPredators
@@ -108,40 +108,39 @@ class Animal:
 
     def waterReact(self, surroundings):
         # check what's around
-        canDrink = False
+        action_list = []
         nearbyWater = surroundings.getNearbyWater()
-        print(nearbyWater)
         if nearbyWater == []:
-            return None
-        else:
-            print("Drinking")
-            canDrink = True
 
-            # preds = surroundings.getNearbyPredators
-            # preys = surroundings.getNearbyPrey
-            # for i in len(preds):
-            #     predX = preds[i].position_x
-            #     predY = preds[i].position_y
-            #     if nearbyWater[0] == predX and nearbyWater[-1] == predY:
-            #         canDrink = False
-            #         break
-            # for i in len(preys):
-            #     preyX = preys[i].position_x
-            #     preyY = preys[i].position_y
-            #     if nearbyWater[0] == preyX and nearbyWater[-1] == preyY:
-            #         canDrink = False
-            #         break
+            return action_list
 
-        if canDrink is True:
-            # there is water to drink
-            self.currWater += (0.25 * self.maxWater)
-            self.position_x = nearbyWater[0][0]
-            self.position_y = nearbyWater[0][1]
-            # returns the coordinate of the water
-            return nearbyWater
-            # water level below 75% of maxWater, drink and level goes up 25%
-        else:
-            return None
+        for loc in nearbyWater:
+            if (max(abs(loc[0] - self.position_x),
+                    abs(loc[1] - self.position_y)) <= 1):
+                self.currWater += (0.25 * self.maxWater)
+                # returns the coordinate of the water
+                action_drink = DrinkAction()
+                action_list.append(action_drink)
+                return action_list
+        locc = nearbyWater[0]
+        dx = -1
+        dy = -1
+        if locc[0] > self.position_x:
+            dx = 1
+        elif locc[0] == self.position_x:
+            dx = 0
+        if locc[1] > self.position_y:
+            dy = 1
+        elif locc[1] == self.position_y:
+            dy = 0
+        moveaction = MoveAction()
+        moveaction.setstartLocation((self.position_x, self.position_y))
+        moveaction.setendLocation((self.position_x + dx, self.position_y + dy))
+
+        self.position_x += dx
+        self.position_y += dy
+        action_list.append(moveaction)
+        return action_list
 
     def tempReact(self, surroundings):
         temp = surroundings.getTemp()
@@ -254,7 +253,7 @@ class Predator(Animal):
             # if it's not fertile, it will return
             return None
 
-        nearbyPreds = surroundings.getNearbyPredators
+        nearbyPreds = surroundings.getNearbyPredators()
         for i in nearbyPreds:
             if (i.is_female != self.is_female) and (i.checkIsFertile):
                 # can mate: opposite genders, both fertile, other didnt move
@@ -301,18 +300,10 @@ class Predator(Animal):
                 return current_action_list
         """
         if self.currWater < (.75 * self.maxWater):
-            coords = self.waterReact(animal_sr)
-            if (coords is not None):
-                # was able to drink
-                drink_action = DrinkAction()
-                current_action_list.append(drink_action)
+            action_list = self.waterReact(animal_sr)
 
-                move_action = MoveAction()
-                currLocation = (self.position_x, self.position_y)
-                move_action.setstartLocation(self, currLocation)
-                move_action.setendLocation(self, coords)
-                current_action_list.append(move_action)
-                return current_action_list
+            if action_list:
+                return action_list
         """
         if self.reproductionReact() == True:
             # animal is reproducing
@@ -383,7 +374,7 @@ class Prey(Animal):
     def preyReact(self, animal_sr):
         # make use_resource function: use food and water (small amts) for any action; call it here
 
-        self.currWater -= self.maxWater * 0.1
+        self.currWater -= self.maxWater * 0.04
         #self.currFood -= self.maxFood * 0.1
         current_action_list = []
 
@@ -395,7 +386,7 @@ class Prey(Animal):
             current_action_list.append(die_action)
             return current_action_list
             # tell sim to delete self
-        """
+        
         if self.currFood < (0.75 * self.maxFood):
             eat = self.eatPlant(animal_sr) #should be a list with coords of plant and 2, or None if nothing was eaten
             if (eat is not None):
@@ -413,20 +404,11 @@ class Prey(Animal):
                 current_action_list.append(move_action)
                 return current_action_list
         
-        """
+        
         if self.currWater < (.75 * self.maxWater):
-            coords = self.waterReact(animal_sr)
-            if (coords is not None):
-                # was able to drink
-                drink_action = DrinkAction()
-                current_action_list.append(drink_action)
-
-                move_action = MoveAction()
-                currLocation = (self.position_x, self.position_y)
-                move_action.setstartLocation(self, currLocation)
-                move_action.setendLocation(self, coords)
-                current_action_list.append(move_action)
-                return current_action_list
+            action_list = self.waterReact(animal_sr)
+            if action_list:
+                return action_list
         """
         elif self.reproductionPreyReact(animal_sr) == True:
             # check if can reproduce, will be true if yes
@@ -443,7 +425,8 @@ class Prey(Animal):
         currLocation = (self.position_x, self.position_y)
 
         invalid_locs = animal_sr.getNearbyPrey(
-        ) + animal_sr.getNearbyPredators()
+        ) + animal_sr.getNearbyPredators() + animal_sr.getNearbyWater(
+        ) + animal_sr.getNearbyFood()
 
         self.random_move(invalid_locs)
 
