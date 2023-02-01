@@ -10,7 +10,7 @@ class Tile:
         self.has_plant = plant
         self.has_pred = 0
         self.has_prey = 0
-        self.totalPlants = 0
+
 
     def get_terrain(self):
         return self.terrain
@@ -50,7 +50,6 @@ class Tile:
 
     def set_plant(self):
         self.has_plant = True
-        self.totalPlants = self.totalPlants + 1
         self.occupied = True
         self.terrain = "F"
         return

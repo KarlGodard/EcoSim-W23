@@ -97,6 +97,7 @@ class Map:
             # generating extra dimensions so pond isn't square
             shift = int(random.randint(-2, 2))
             for j in range(height):
+              if (y_cord+i < self.size_y and x_cord + j + shift < self.size_x):
                 self.map[y_cord + i][x_cord + j + shift].set_water()
 
     def generate_initial_plants(self):
@@ -118,9 +119,9 @@ class Map:
         return
 
     def delete_plant(self, loc):
-        tile = self.convertIDtoTile(loc)
-        tile.totalPlants = tile.totalPlants - 1
-        tile.food = False
+        tile = self.locToTile(loc)
+        tile.has_plant = False
+        tile.terrain = "E"
         return
 
     def initialize_animals(self):
@@ -220,7 +221,7 @@ class Map:
         loc = self.convertIDtoLoc(animalID)
         locs_with_food = []
         # search distance
-        search_dist = 20
+        search_dist = 2
         min_x = max(0, loc[0] - search_dist)
         max_x = min(self.size_x, loc[0] + search_dist + 1)
         min_y = max(0, loc[1] - search_dist)

@@ -70,6 +70,7 @@ class Simulation():
 
             survives = True
             for action in actions:
+                
                 if (action.type == "eat"):
                     if action.foodType == "animal":
                         self.map.delete_animal(action.foodLocation)

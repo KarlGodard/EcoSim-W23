@@ -67,44 +67,46 @@ class Animal:
         self.position_y = y_loc
 
     def eatPlant(self, surroundings):
+        action_list = []
         # nearbyFood is coordinate of nearest plant
         nearbyPlants = surroundings.getNearbyPlants()
-        if nearbyPlants == None:
+        
+        if nearbyPlants == []:
             # returns None if cannot eat plant
-            return None
-        else:
-            return [nearbyPlants[0], 2]
-            """
-            canEat = True
-            preds = surroundings.getNearbyPredators
-            preys = surroundings.getNearbyPrey
-            for i in range(len(preds)):
-                predX = preds[i][0]
-                predY = preds[i][1]
-                if nearbyFood[0] == predX and nearbyFood[-1] == predY:
-                    canEat = False
-                    break
-            for i in range(len(preys)):
-                preyX = preys[i].position_x
-                preyY = preys[i].position_y
-                if nearbyFood[0] == preyX and nearbyFood[-1] == preyY:
-                    canEat = False
-                    break
+            return action_list
+        for loc in nearbyPlants:
+            #eat plant if location is found adjacent to the animal
+            if (max(abs(loc[0] - self.position_x),
+                        abs(loc[1] - self.position_y)) <= 1):
+                self.currFood += (0.25 * self.maxFood)
+                # returns the coordinate of the water
+                action_eat = EatAction()
+                action_eat.setFoodType("Plant")
+                action_eat.setFoodLocation(loc)
+                action_list.append(action_eat)
+                return action_list
 
-            if canEat is True:
-                # there is plant to eat, returns the coords
-                eatReact = []
-                self.currFood += (0.15 * self.maxFood)
-                self.position_x = nearbyFood[0]
-                self.position_y = nearbyFood[-1]
-                eatReact.append(nearbyFood)
-                eatReact.append(2)
-                #returns the a list with [coords of plant, 2]
-                # 2 means it's eating a plant
-                return eatReact
-            else:
-                return None
-            """
+        #move towards the nearest food location
+        locc = nearbyPlants[0]
+        dx = -1
+        dy = -1
+        if locc[0] > self.position_x:
+            dx = 1
+        elif locc[0] == self.position_x:
+            dx = 0
+        if locc[1] > self.position_y:
+            dy = 1
+        elif locc[1] == self.position_y:
+            dy = 0
+        moveaction = MoveAction()
+        moveaction.setstartLocation((self.position_x, self.position_y))
+        moveaction.setendLocation((self.position_x + dx, self.position_y + dy))
+
+        self.position_x += dx
+        self.position_y += dy
+        action_list.append(moveaction)
+        return action_list
+        
 
     def waterReact(self, surroundings):
         # check what's around
@@ -208,41 +210,7 @@ class Predator(Animal):
             # returns a list of [(xCoord, yCoord), 1]
             # 1 means it's eating a prey
             return eatReact
-            """
-            eatReact = []
-            canEat = False
-            preyIndex = 0
-            nearbyPreds = surroundings.getNearbyPredators()
             
-            for i in range(len(nearbyPrey)):
-                madeIt = True
-                preyX = nearbyPrey[i][0]
-                preyY = nearbyPrey[i][1]
-                for j in range(len(nearbyPreds)):
-                    currX = nearbyPreds[j][0]
-                    currY = nearbyPreds[j][1]
-                    if preyX == currX and preyY == currY:
-                        madeIt = False
-                        break
-                if madeIt is True:
-                    canEat = True
-                    preyIndex = i
-                    break
-            
-            if canEat is False:
-                self.eatPlant(surroundings)
-            else:
-                preyEaten = nearbyPrey[preyIndex]
-                self.currFood += (0.20 * self.maxFood)
-                xCoord = preyEaten[0]
-                yCoord = preyEaten[1]
-                coords = (xCoord, yCoord) #make tuple of the coords
-                eatReact.append(coords)
-                eatReact.append(1)
-                # returns a list of [(xCoord, yCoord), 1]
-                # 1 means it's eating a prey
-                return eatReact
-                """
         else:
             # no prey available, try eating a plant
             return self.eatPlant(surroundings)
@@ -268,7 +236,7 @@ class Predator(Animal):
 
         # food and water will decrease by 10% no matter what
         self.currWater -= self.maxWater * 0.1
-        #self.currFood -= self.maxFood * 0.1
+        self.currFood -= self.maxFood * 0.1
         current_action_list = []
 
         self.check_state()  #check if it is alive
@@ -372,10 +340,11 @@ class Prey(Animal):
                 return None
 
     def preyReact(self, animal_sr):
+        #print(self.currFood)
         # make use_resource function: use food and water (small amts) for any action; call it here
 
-        self.currWater -= self.maxWater * 0.04
-        #self.currFood -= self.maxFood * 0.1
+        self.currWater -= self.maxWater * 0.1
+        self.currFood -= self.maxFood * 0.1
         current_action_list = []
 
         self.check_state()  #check if it is alive
@@ -388,22 +357,10 @@ class Prey(Animal):
             # tell sim to delete self
         
         if self.currFood < (0.75 * self.maxFood):
-            eat = self.eatPlant(animal_sr) #should be a list with coords of plant and 2, or None if nothing was eaten
-            if (eat is not None):
-                # was able to eat
-                # tell sim to delete prey, move pred to prey tile
-                eat_action = EatAction()
-                eat_action.setFoodLocation(self, eat[0])
-                eat_action.setFoodType(self, "plant")
-                current_action_list.append(eat_action)
-
-                move_action = MoveAction()
-                currLocation = (self.position_x, self.position_y)
-                move_action.setstartLocation(self, currLocation)
-                move_action.setendLocation(self, eat[0])
-                current_action_list.append(move_action)
-                return current_action_list
-        
+            action_list = self.eatPlant(animal_sr) #should be a list with coords of plant and 2, or None if nothing was eaten
+            
+            if action_list:
+              return action_list
         
         if self.currWater < (.75 * self.maxWater):
             action_list = self.waterReact(animal_sr)
@@ -426,7 +383,7 @@ class Prey(Animal):
 
         invalid_locs = animal_sr.getNearbyPrey(
         ) + animal_sr.getNearbyPredators() + animal_sr.getNearbyWater(
-        ) + animal_sr.getNearbyFood()
+        ) + animal_sr.getNearbyPlants()
 
         self.random_move(invalid_locs)
 
