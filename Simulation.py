@@ -123,7 +123,8 @@ class Simulation():
                     rowData.append("grass")
 
             animalMap.append(rowData)
-
+        print("Animal Map rows ", len(animalMap))
+        print("Animal Map cols ", len(animalMap[0]))
         ## update visualization here
         self.visualization.update_map(animalMap)
         self.map.predator_count.append(self.map.getNumPredators())

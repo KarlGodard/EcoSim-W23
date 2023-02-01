@@ -74,21 +74,21 @@ class Visualization:
         #update map to show current reflection
         num_rows = len(map)
         num_cols = len(map[0])
-        for set in range(num_rows):
-            for object in range(num_cols):
-                if (map[set][object] == "prey"):
-                    self.screen.blit(self.prey, (set * 16, object * 16))
-                elif (map[set][object] == "pred"):
-                    self.screen.blit(self.pred, (set * 16, object * 16))
+        for row in range(num_rows):
+            for col in range(num_cols):
+                if (map[row][col] == "prey"):
+                    self.screen.blit(self.prey, (col * 16, row * 16))
+                elif (map[row][col] == "pred"):
+                    self.screen.blit(self.pred, (col * 16, row * 16))
                 #change self.water back to grass
-                elif (map[set][object] == "grass"):
-                    self.screen.blit(self.grass, (set * 16, object * 16))
-                elif (map[set][object] == "water"):
-                    self.screen.blit(self.water, (set * 16, object * 16))
-                elif (map[set][object] == "plant"):
-                    self.screen.blit(self.plant, (set * 16, object * 16))
-                elif (map[set][object] == "dirt"):
-                    self.screen.blit(self.dirt, (set * 16, object * 16))
+                elif (map[row][col] == "grass"):
+                    self.screen.blit(self.grass, (col * 16, row * 16))
+                elif (map[row][col] == "water"):
+                    self.screen.blit(self.water, (col * 16, row * 16))
+                elif (map[row][col] == "plant"):
+                    self.screen.blit(self.plant, (col * 16, row * 16))
+                elif (map[row][col] == "dirt"):
+                    self.screen.blit(self.dirt, (col * 16, row * 16))
         
         
         pygame.display.flip()
