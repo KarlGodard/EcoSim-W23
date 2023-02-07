@@ -10,18 +10,25 @@ class EatAction(Action):
         self.type = "eat"
         self.foodType = None
         self.foodLocation = (0,0)
+        self.animalID = None
 
     def setFoodLocation(self, foodLocation):
         self.foodLocation = foodLocation
 
     def setFoodType(self, foodType):
-        self.foodType = foodType
+        self.foodType = foodType 
+
+    def setFoodID(self, animalID):
+        set.animalID = animalID
 
     def getFoodType(self):
         return self.foodType
 
     def getFoodLocation(self):
         return self.foodLocation
+
+    def getFoodID(self, animalID):
+        return set.animalID
 
 class MoveAction(Action):
     def __init__(self):

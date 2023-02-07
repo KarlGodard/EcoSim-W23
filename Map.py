@@ -120,6 +120,7 @@ class Map:
 
     def delete_plant(self, loc):
         tile = self.locToTile(loc)
+        print("Plant deleted at ", loc)
         tile.has_plant = False
         tile.terrain = "E"
         return
@@ -194,13 +195,13 @@ class Map:
         self.IDtoLoc[animal_id] = loc
         return
 
-    def delete_animal(self, animal_id):
-        tile = self.convertIDtoTile(animal_id)
+    def delete_animal(self, loc):
+        tile = self.locToTile(loc)
         tile.has_pred = 0
         tile.has_prey = 0
         tile.animal = False
         self.numAnimals = self.numAnimals - 1
-
+        self.numPrey = self.numPrey - 1
         #if animal_id in self.current_order:
         #    self.current_order.remove(animal_id)
 
