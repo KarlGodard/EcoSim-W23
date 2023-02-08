@@ -87,6 +87,7 @@ class Animal:
                 return action_list
 
         #move towards the nearest food location
+        #TODO: move towards NEAREST plant, not just the first plant observed
         locc = nearbyPlants[0]
         dx = -1
         dy = -1
@@ -267,10 +268,10 @@ class Predator(Animal):
             return current_action_list
             # tell sim to delete self
 
-        # if self.currFood < (0.75 * self.maxFood):
-        #     action_list = self.eatPrey(animal_sr) #should be a list with coords and 1 or 2 depending on pred or prey eaten, or None if nothing was eaten
-        #     if action_list:
-        #         return action_list
+        if self.currFood < (0.75 * self.maxFood):
+            action_list = self.eatPrey(animal_sr) #should be a list with coords and 1 or 2 depending on pred or prey eaten, or None if nothing was eaten
+            if action_list:
+                return action_list
 
         if self.currWater < (.75 * self.maxWater):
             action_list = self.waterReact(animal_sr)
