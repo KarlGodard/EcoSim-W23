@@ -1,11 +1,11 @@
 from Tile import Tile
 from Animal import Animal
+from Animal import Predator
+from Animal import Prey
 from Visualization import Visualization
 import random
 import math
 import numpy as np
-import Predator
-import Prey
 import copy
 import matplotlib.pyplot as plt
 
@@ -97,8 +97,9 @@ class Map:
             # generating extra dimensions so pond isn't square
             shift = int(random.randint(-2, 2))
             for j in range(height):
-              if (y_cord+i < self.size_y and x_cord + j + shift < self.size_x):
-                self.map[y_cord + i][x_cord + j + shift].set_water()
+                if (y_cord + i < self.size_y
+                        and x_cord + j + shift < self.size_x):
+                    self.map[y_cord + i][x_cord + j + shift].set_water()
 
     def generate_initial_plants(self):
         self.generate_plants(.85)
