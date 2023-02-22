@@ -210,8 +210,8 @@ class Map:
         tile.animal_id = -1
         self.numAnimals = self.numAnimals - 1
 
-        if animal_id in self.current_order:
-           self.current_order.remove(animal_id)
+        # if animal_id in self.current_order:
+        #    self.current_order.remove(animal_id)
 
         if animal_id in self.next_order:
             self.next_order.remove(animal_id)
@@ -224,6 +224,7 @@ class Map:
         self.IDtoAnimal.pop(animal_id)
         self.IDtoLoc.pop(animal_id)
 
+        self.convertIDtoAnimal(animal_id).alive = False
         return
 
     def getNearbyPlants(self, animalID):
