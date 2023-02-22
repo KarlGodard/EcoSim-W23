@@ -155,6 +155,9 @@ class Map:
         self.next_order.append(self.animal_id)
         self.map[y][x].set_predator()
 
+        #set animal_id
+        self.map[y][x].animal_id = self.animal_id
+
         self.animal_id = self.animal_id + 1
         self.numAnimals = self.numAnimals + 1
         self.numPredators += 1
@@ -171,6 +174,9 @@ class Map:
         self.next_order.append(self.animal_id)
         self.map[y][x].set_prey()
 
+        #set animal_id
+        self.map[y][x].animal_id = self.animal_id
+
         self.animal_id = self.animal_id + 1
         self.numAnimals = self.numAnimals + 1
         self.numPrey += 1
@@ -185,9 +191,10 @@ class Map:
         tile.animal = False
         tile.has_pred = False
         tile.has_prey = False
+        tile.animal_id = -1
 
         #update new tile
-        newTile.animal = animal_id
+        newTile.animal_id = animal_id
         if animal.isPrey:
             newTile.has_prey = True
         else:
@@ -196,15 +203,15 @@ class Map:
         self.IDtoLoc[animal_id] = loc
         return
 
-    def delete_animal(self, loc):
-        tile = self.locToTile(loc)
+    def delete_animal(self, animal_id):
+        tile = self.convertIDtoTile(animal_id)
         tile.has_pred = 0
         tile.has_prey = 0
-        tile.animal = False
+        tile.animal_id = -1
         self.numAnimals = self.numAnimals - 1
-        animal_id = tile.animal
-        #if animal_id in self.current_order:
-        #    self.current_order.remove(animal_id)
+
+        if animal_id in self.current_order:
+           self.current_order.remove(animal_id)
 
         if animal_id in self.next_order:
             self.next_order.remove(animal_id)

@@ -4,6 +4,7 @@ class Tile:
         self.terrain = terrain
         self.occupied = False
         self.animal = False
+        self.animal_id = -1
         # this is in Fahrenheit because we are Americans
         self.temp = temp
         self.has_water = water

@@ -73,7 +73,8 @@ class Simulation():
                 
                 if (action.type == "eat"):
                     if action.foodType == "animal":
-                        self.map.delete_animal(action.foodLocation)
+                        id = self.map.map[action.foodLocation[1]][action.foodLocation[0]].animal_id
+                        self.map.delete_animal(id)
                     elif action.foodType == "plant":
                         self.map.delete_plant(action.foodLocation)
 
