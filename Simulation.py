@@ -1,5 +1,7 @@
 from Map import Map
 from Animal import Animal
+from Predator import Predator
+from Prey import Prey
 from SensoryRange import SensoryRange
 import random
 from IPython.display import clear_output
@@ -41,7 +43,7 @@ class Simulation():
 
     def simulationLoop(self, t):
         # Map.get_next_animal() -> either animal object or None
-
+        
         animal = self.map.getNextAnimal()
         while animal != None:
             animal_sr = SensoryRange()
@@ -70,10 +72,15 @@ class Simulation():
 
             survives = True
             for action in actions:
-                
+
                 if (action.type == "eat"):
                     if action.foodType == "animal":
-                        id = self.map.map[action.foodLocation[1]][action.foodLocation[0]].animal_id
+
+                        id = self.map.map[action.foodLocation[1]][
+                            action.foodLocation[0]].animal_id
+                        print("Animal " + str(id) + " eaten by " + str(animal))
+                        if id == animal:
+                            print("Error: animal eats itself")
                         self.map.delete_animal(id)
                     elif action.foodType == "plant":
                         self.map.delete_plant(action.foodLocation)
@@ -88,6 +95,7 @@ class Simulation():
                 elif (action.type == "drink"):
                     pass  #no action needed
                 elif (action.type == "die"):
+                    print("Animal " + str(animal) + " died")
                     self.map.delete_animal(animal)
                     survives = False
                     break  #remove from map, delete animal
@@ -124,14 +132,14 @@ class Simulation():
                     rowData.append("grass")
 
             animalMap.append(rowData)
-        
+
         ## update visualization here
         self.visualization.update_map(animalMap)
         self.map.predator_count.append(self.map.getNumPredators())
         self.map.prey_count.append(self.map.getNumPrey())
 
         ## Time before switching screens
-        pygame.time.wait(500)
+        #pygame.time.wait(500)
 
     def run_simulation(self):
 

@@ -1,4 +1,13 @@
-import Animal
+from Animal import Animal
+import random
+from random import randrange
+from SensoryRange import SensoryRange
+from Action import DieAction
+from Action import EatAction
+from Action import MoveAction
+from Action import ReproduceAction
+from Action import DrinkAction
+
 
 class Prey(Animal):
 
@@ -29,7 +38,7 @@ class Prey(Animal):
         if not self.checkIsFertile:
             # if it's not fertile, it will return
             return None
-            
+
         nearbyPrey = surroundings.getNearbyPrey()
 
         for i in nearbyPrey:
@@ -69,14 +78,13 @@ class Prey(Animal):
             action_list = self.waterReact(animal_sr)
             if action_list:
                 return action_list
-        
+
         # elif self.reproductionPreyReact(animal_sr) == True:
         #     # check if can reproduce, will be true if yes
         #     reproduce_action = ReproduceAction()
         #     reproduce_action.setAnimalType(self, "prey")
         #     current_action_list.append(reproduce_action)
         #     return current_action_list
-
 
         # if nothing happens, will randomly move
 
@@ -90,8 +98,9 @@ class Prey(Animal):
         self.random_move(invalid_locs)
 
         endLocation = (self.position_x, self.position_y)
-        move_action.setstartLocation(currLocation)
-        move_action.setendLocation(endLocation)
-        current_action_list.append(move_action)
+        if endLocation not in invalid_locs:
+            move_action.setstartLocation(currLocation)
+            move_action.setendLocation(endLocation)
+            current_action_list.append(move_action)
 
         return current_action_list
