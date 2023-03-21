@@ -71,9 +71,11 @@ class Predator(Animal):
                 # can mate: opposite genders, both fertile, other didnt move
                 # neither animal moves
                 # animal is reproducing
+                action_list = []
                 reproduce_action = ReproduceAction()
                 reproduce_action.setAnimalType(self, "pred")
-                return reproduce_action
+                action_list.append(reproduce_action)
+                return action_list
             else:
                 # mating conditions do not work, return False
                 return []
@@ -88,7 +90,7 @@ class Predator(Animal):
 
         self.check_state()  #check if it is alive
         #self.tempReact()
-        if self.alive == 0:
+        if not self.alive:
             die_action = DieAction()
             current_action_list.append(die_action)
             return current_action_list

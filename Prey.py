@@ -45,6 +45,7 @@ class Prey(Animal):
             # can mate
             if (i.is_female != self.is_female) and (i.checkIsFertile):
                 # check if can reproduce, will be true if yes
+                current_action_list = []
                 reproduce_action = ReproduceAction()
                 reproduce_action.setAnimalType(self, "prey")
                 current_action_list.append(reproduce_action)
