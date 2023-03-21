@@ -220,16 +220,16 @@ class Map:
         self.numAnimals = self.numAnimals - 1
       
         print("Deleting animal " + str(animal_id))
-        print(self.current_order)
+        #print(self.current_order)
         if animal_id in self.current_order and self.current_order.index(animal_id) >= self.current_index:
            self.current_order.remove(animal_id)
-        print(self.current_order)
+        #print(self.current_order)
 
-        print(self.next_order)
+        #print(self.next_order)
         assert (len(self.next_order) == len(set(self.next_order)))
         if animal_id in self.next_order:
             self.next_order.remove(animal_id)
-        print(self.next_order)  
+        #print(self.next_order)  
 
         if self.convertIDtoAnimal(animal_id).is_prey:
             self.numPrey -= 1

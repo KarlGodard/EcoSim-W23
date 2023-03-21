@@ -94,6 +94,7 @@ class Simulation():
                     #position x, position y
 
                 elif (action.type == "reproduce"):
+                    print("Animal born at " + str(aciton.endLocation))
                     if animal_obj.is_prey:
                         self.map.create_prey(animal, action.endLocation)
                     else:
