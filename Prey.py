@@ -33,6 +33,7 @@ class Prey(Animal):
         self.alive = 1
         self.xmax = xmax
         self.ymax = ymax
+        self.age = 0
 
     def reproduce(self, surroundings):
         if not self.checkIsFertile:
@@ -48,6 +49,10 @@ class Prey(Animal):
                 current_action_list = []
                 reproduce_action = ReproduceAction()
                 reproduce_action.setAnimalType(self, "prey")
+
+                open_tiles = self.getOpenTiles(surroundings)
+                reproduce_action.setendLocation(random.choice(open_tiles))
+
                 current_action_list.append(reproduce_action)
                 return current_action_list
             else:
@@ -88,9 +93,6 @@ class Prey(Animal):
             action_list = self.reproduce(animal_sr)
             if action_list:
                 return action_list
-
-       
-            
 
         # if nothing happens, will randomly move
 

@@ -43,7 +43,7 @@ class Simulation():
 
     def simulationLoop(self, t):
         # Map.get_next_animal() -> either animal object or None
-        
+
         animal = self.map.getNextAnimal()
         while animal != None:
             animal_sr = SensoryRange()
@@ -86,14 +86,18 @@ class Simulation():
                         self.map.delete_plant(action.foodLocation)
 
                 elif (action.type == "move"):
-                    if (self.map.locToTile(action.endLocation).has_prey or self.map.locToTile(action.endLocation).has_pred):
+                    if (self.map.locToTile(action.endLocation).has_prey or
+                            self.map.locToTile(action.endLocation).has_pred):
                         continue
-                    
+
                     self.map.move_animal(animal, action.endLocation)
                     #position x, position y
 
                 elif (action.type == "reproduce"):
-                    self.map.create_animal(animal, action.endLocation)
+                    if animal_obj.is_prey:
+                        self.map.create_prey(animal, action.endLocation)
+                    else:
+                        self.map.create_predator(animal, action.endLocation)
 
                 elif (action.type == "drink"):
                     pass  #no action needed
@@ -108,6 +112,8 @@ class Simulation():
 
             if survives:
                 self.map.next_order.append(animal)
+
+            animal_obj.age += 1
 
             #end of animal loop
             animal = self.map.getNextAnimal()

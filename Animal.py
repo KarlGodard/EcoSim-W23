@@ -27,6 +27,7 @@ class Animal:
         self.alive = 1
         self.xmax = xmax
         self.ymax = ymax
+        self.age = 0
 
     def move(self, dx, dy, xmax, ymax):
         # print out of bounds statement for edges
@@ -57,6 +58,22 @@ class Animal:
         self.position_x = x_loc
         self.position_y = y_loc
 
+    def getOpenTiles(self, surroundings):
+        loc = (self.position_x, self.position_y)
+        locs_empty_tile = []
+        # search distance
+        search_dist = 1
+        min_x = max(0, loc[0] - search_dist)
+        max_x = min(self.size_x, loc[0] + search_dist + 1)
+        min_y = max(0, loc[1] - search_dist)
+        max_y = min(self.size_y, loc[1] + search_dist + 1)
+        for i in range(min_x, max_x):
+            for j in range(min_y, max_y):
+                if self.locToTile((i, j)).occupied == False:
+                    locs_empty_tile.append((i, j))
+
+        return locs_empty_tile
+  
     def eatPlant(self, surroundings):
         action_list = []
         # nearbyFood is coordinate of nearest plant
@@ -148,7 +165,7 @@ class Animal:
 
     def checkIsFertile(self):
         if self.currFood < (self.maxFood * 0.75) or self.currWater < (
-                self.maxWater * 0.75):  #changed from 0.5
+                self.maxWater * 0.75) or self.age < 10:  #changed from 0.5
             self.isFertile = 0
         else:
             self.isFertile = 1

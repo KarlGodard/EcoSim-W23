@@ -33,6 +33,7 @@ class Predator(Animal):
         self.alive = 1
         self.xmax = xmax
         self.ymax = ymax
+        self.age = 0
 
     def eatPrey(self, surroundings):
         # a list of preys
@@ -64,6 +65,8 @@ class Predator(Animal):
             action_list.append(moveaction)
         return action_list
 
+
+  
     def reproduce(self, surroundings):
         nearbyPreds = surroundings.getNearbyPredators()
         for i in nearbyPreds:
@@ -74,6 +77,10 @@ class Predator(Animal):
                 action_list = []
                 reproduce_action = ReproduceAction()
                 reproduce_action.setAnimalType(self, "pred")
+
+                open_tiles = self.getOpenTiles(surroundings)
+                reproduce_action.setendLocation(random.choice(open_tiles))
+              
                 action_list.append(reproduce_action)
                 return action_list
             else:
