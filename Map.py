@@ -198,7 +198,9 @@ class Map:
 
         #update new tile'
         if (newTile.has_pred != 0 or newTile.has_prey != 0 or newTile.has_water != 0):
-            exit(1)
+            #exit(1)
+            print('Illegal action: movement onto occupied tile')
+
         newTile.animal_id = animal_id
         if animal.is_prey:
             newTile.has_prey = True
@@ -260,11 +262,15 @@ class Map:
     def getNearbyPredators(self, animalID):
         loc = self.convertIDtoLoc(animalID)
         locs_with_predators = []
-        x = loc[0]
-        y = loc[1]
-        for i in range(x - 1, x + 1):
-            for j in range(y - 1, y + 1):
-                if self.map[j][i].is_pred():
+
+        search_dist = 2
+        min_x = max(0, loc[0] - search_dist)
+        max_x = min(self.size_x, loc[0] + search_dist + 1)
+        min_y = max(0, loc[1] - search_dist)
+        max_y = min(self.size_y, loc[1] + search_dist + 1)
+        for i in range(min_x, max_x):
+            for j in range(min_y, max_y):
+                if self.locToTile((i, j)).has_pred:
                     locs_with_predators.append((i, j))
 
         return locs_with_predators
@@ -272,13 +278,17 @@ class Map:
     def getNearbyPrey(self, animalID):
         loc = self.convertIDtoLoc(animalID)
         locs_with_prey = []
-        x = loc[0]
-        y = loc[1]
-        search_range = 1
-        for i in range(x - search_range, x + search_range):
-            for j in range(y - search_range, y + search_range):
-                if self.map[j][i].is_prey():
+        
+        search_dist = 2
+        min_x = max(0, loc[0] - search_dist)
+        max_x = min(self.size_x, loc[0] + search_dist + 1)
+        min_y = max(0, loc[1] - search_dist)
+        max_y = min(self.size_y, loc[1] + search_dist + 1)
+        for i in range(min_x, max_x):
+            for j in range(min_y, max_y):
+                if self.locToTile((i, j)).has_prey:
                     locs_with_prey.append((i, j))
+
         return locs_with_prey
 
     def getNearbyWater(self, animalID):
@@ -292,7 +302,7 @@ class Map:
         max_y = min(self.size_y, loc[1] + search_dist + 1)
         for i in range(min_x, max_x):
             for j in range(min_y, max_y):
-                if self.locToTile((i, j)).has_water == True:
+                if self.locToTile((i, j)).has_water:
                     locs_with_water.append((i, j))
 
         return locs_with_water

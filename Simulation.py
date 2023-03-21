@@ -86,6 +86,9 @@ class Simulation():
                         self.map.delete_plant(action.foodLocation)
 
                 elif (action.type == "move"):
+                    if (self.map.locToTile(action.endLocation).has_prey or self.map.locToTile(action.endLocation).has_pred):
+                        continue
+                    
                     self.map.move_animal(animal, action.endLocation)
                     #position x, position y
 
