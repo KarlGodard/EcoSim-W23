@@ -63,7 +63,7 @@ class Simulation():
 
             #pass data to animal and receive actions
             animal_obj = self.map.convertIDtoAnimal(animal)
-            if animal_obj.isPrey:
+            if animal_obj.is_prey:
                 actions = animal_obj.preyReact(animal_sr)
             else:
                 actions = animal_obj.predReact(animal_sr)

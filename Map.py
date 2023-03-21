@@ -200,7 +200,7 @@ class Map:
         if (newTile.has_pred != 0 or newTile.has_prey != 0 or newTile.has_water != 0):
             exit(1)
         newTile.animal_id = animal_id
-        if animal.isPrey:
+        if animal.is_prey:
             newTile.has_prey = True
         else:
             newTile.has_pred = True
@@ -229,7 +229,7 @@ class Map:
             self.next_order.remove(animal_id)
         print(self.next_order)  
 
-        if self.convertIDtoAnimal(animal_id).isPrey:
+        if self.convertIDtoAnimal(animal_id).is_prey:
             self.numPrey -= 1
         else:
             self.numPredators -= 1

@@ -22,8 +22,8 @@ class Predator(Animal):
         self.currWater = 100
         self.maxWater = 100
         self.is_female = random.choice([0, 1])
-        self.isPrey = 0
-        self.isFertile = 0
+        self.is_prey = 0
+        self.is_fertile = 0
         self.animalId = animalID
         if position_x == None:
             self.set_random_location()
@@ -64,20 +64,19 @@ class Predator(Animal):
             action_list.append(moveaction)
         return action_list
 
-    # def reproductionPredReact(self, surroundings):
-    #     if not self.checkIsFertile:
-    #         # if it's not fertile, it will return
-    #         return None
-
-    #     nearbyPreds = surroundings.getNearbyPredators()
-    #     for i in nearbyPreds:
-    #         if (i.is_female != self.is_female) and (i.checkIsFertile):
-    #             # can mate: opposite genders, both fertile, other didnt move
-    #             # neither animal moves
-    #             return True
-    #         else:
-    #             # mating conditions do not work, return False
-    #             return False
+    def reproduce(self, surroundings):
+        nearbyPreds = surroundings.getNearbyPredators()
+        for i in nearbyPreds:
+            if (i.is_female != self.is_female) and (i.checkIsFertile):
+                # can mate: opposite genders, both fertile, other didnt move
+                # neither animal moves
+                # animal is reproducing
+                reproduce_action = ReproduceAction()
+                reproduce_action.setAnimalType(self, "pred")
+                return reproduce_action
+            else:
+                # mating conditions do not work, return False
+                return []
 
     def predReact(self, animal_sr):
         # make use_resource function: use food and water (small amts) for any action; call it here
@@ -95,28 +94,30 @@ class Predator(Animal):
             return current_action_list
             # tell sim to delete self
 
-        if self.currFood < (0.75 * self.maxFood):
-            action_list = self.eatPrey(
-                animal_sr
-            )  #should be a list with coords and 1 or 2 depending on pred or prey eaten, or None if nothing was eaten
-            if action_list:
-                return action_list
+        # if self.currFood < (0.75 * self.maxFood):
+        #     action_list = self.eatPrey(
+        #         animal_sr
+        #     )  #should be a list with coords and 1 or 2 depending on pred or prey eaten, or None if nothing was eaten
+        #     if action_list:
+        #         return action_list
 
         if self.currWater < (.75 * self.maxWater):
             action_list = self.waterReact(animal_sr)
 
             if action_list:
                 return action_list
-        """
-        if self.reproductionReact() == True:
-            # animal is reproducing
-            reproduce_action = ReproduceAction
-            reproduce_action.setAnimalType(self, "pred")
-            current_action_list.append(reproduce_action)
-            return current_action_list
+        
 
-        else:
-        """
+        if self.checkIsFertile():
+            action_list = self.reproduce(animal_sr)
+
+            if action_list:
+                return action_list
+                
+            return action_list
+
+        
+        
         # no action taken, so animal just moves
         move_action = MoveAction()
         currLocation = (self.position_x, self.position_y)

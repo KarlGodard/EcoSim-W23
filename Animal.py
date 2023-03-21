@@ -146,13 +146,13 @@ class Animal:
     #     if (rand < min((temp - 110)**2, (temp)**2)):
     #         self.kill(self)
 
-    # def checkIsFertile(self):
-    #     if self.food < (self.maxFood * 0.75) or self.water < (
-    #             self.maxWater * 0.75):  #changed from 0.5
-    #         self.isFertile = 0
-    #     else:
-    #         self.isFertile = 1
-    #         # do age later
+    def checkIsFertile(self):
+        if self.currFood < (self.maxFood * 0.75) or self.currWater < (
+                self.maxWater * 0.75):  #changed from 0.5
+            self.isFertile = 0
+        else:
+            self.isFertile = 1
+            # do age later
 
 
 

@@ -22,8 +22,8 @@ class Prey(Animal):
         self.currWater = 75
         self.maxWater = 75
         self.is_female = random.choice([0, 1])
-        self.isPrey = 1
-        self.isFertile = 0
+        self.is_prey = 1
+        self.is_fertile = 0
         self.animalID = animalID
         if position_x == None:
             self.set_random_location()
@@ -34,7 +34,7 @@ class Prey(Animal):
         self.xmax = xmax
         self.ymax = ymax
 
-    def reproductionPreyReact(self, surroundings):
+    def reproduce(self, surroundings):
         if not self.checkIsFertile:
             # if it's not fertile, it will return
             return None
@@ -44,10 +44,14 @@ class Prey(Animal):
         for i in nearbyPrey:
             # can mate
             if (i.is_female != self.is_female) and (i.checkIsFertile):
-                return True
+                # check if can reproduce, will be true if yes
+                reproduce_action = ReproduceAction()
+                reproduce_action.setAnimalType(self, "prey")
+                current_action_list.append(reproduce_action)
+                return current_action_list
             else:
                 #cannot mate
-                return None
+                return []
 
     def preyReact(self, animal_sr):
         #print(self.currFood)
@@ -79,12 +83,13 @@ class Prey(Animal):
             if action_list:
                 return action_list
 
-        # elif self.reproductionPreyReact(animal_sr) == True:
-        #     # check if can reproduce, will be true if yes
-        #     reproduce_action = ReproduceAction()
-        #     reproduce_action.setAnimalType(self, "prey")
-        #     current_action_list.append(reproduce_action)
-        #     return current_action_list
+        if self.is_fertile:
+            action_list = self.reproduce(animal_sr)
+            if action_list:
+                return action_list
+
+       
+            
 
         # if nothing happens, will randomly move
 
