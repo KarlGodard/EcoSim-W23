@@ -64,6 +64,9 @@ class Map:
     def locToTile(self, loc):
         return self.map[loc[1]][loc[0]]
 
+    def locToAnimal(self, loc):
+        return self.IDtoAnimal[self.locToTile(loc).animal_id]
+
     # function that makes a sine function that we
     # can pass back to tile to make curvy rivers
     def river_maker(self):
@@ -121,7 +124,7 @@ class Map:
 
     def delete_plant(self, loc):
         tile = self.locToTile(loc)
-        print("Plant deleted at ", loc)
+        #print("Plant deleted at ", loc)
         tile.has_plant = False
         tile.terrain = "E"
         return
@@ -219,7 +222,7 @@ class Map:
         tile.animal_id = -1
         self.numAnimals = self.numAnimals - 1
       
-        print("Deleting animal " + str(animal_id))
+        #print("Deleting animal " + str(animal_id))
         #print(self.current_order)
         if animal_id in self.current_order and self.current_order.index(animal_id) >= self.current_index:
            self.current_order.remove(animal_id)
@@ -295,7 +298,7 @@ class Map:
         loc = self.convertIDtoLoc(animalID)
         locs_with_water = []
         # search distance
-        search_dist = 20
+        search_dist = 2
         min_x = max(0, loc[0] - search_dist)
         max_x = min(self.size_x, loc[0] + search_dist + 1)
         min_y = max(0, loc[1] - search_dist)
@@ -306,7 +309,26 @@ class Map:
                     locs_with_water.append((i, j))
 
         return locs_with_water
-
+    def getViableMates(self, animal_id):
+        animal = self.IDtoAnimal[animal_id]
+        if not animal.checkIsFertile():
+            return []
+        loc = self.convertIDtoLoc(animal_id)
+        locs_with_mate = []
+        # search distance
+        search_dist = 2
+        min_x = max(0, loc[0] - search_dist)
+        max_x = min(self.size_x, loc[0] + search_dist + 1)
+        min_y = max(0, loc[1] - search_dist)
+        max_y = min(self.size_y, loc[1] + search_dist + 1)
+        for i in range(min_x, max_x):
+            for j in range(min_y, max_y):
+                if self.map[j][i].has_animal:
+                    other = self.IDtoAnimal[self.map[j][i].animal_id]
+                    if other.checkIsFertile() and (other.isPrey == animal.isPrey) and other.is_female != animal.is_female:
+                        locs_with_mate.append((i, j))
+        return locs_with_mate
+      
     def getTemp(self):
         return self.currTemp
 

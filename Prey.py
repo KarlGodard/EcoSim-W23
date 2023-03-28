@@ -34,30 +34,30 @@ class Prey(Animal):
         self.xmax = xmax
         self.ymax = ymax
         self.age = 0
+        self.reprDelay = 0
+        
 
     def reproduce(self, surroundings):
-        if not self.checkIsFertile:
-            # if it's not fertile, it will return
-            return None
+        nearbyMates = surroundings.getNearbyMates()
+        for i in nearbyMates:
+            
+            # can mate: opposite genders, both fertile, other didnt move
+            # neither animal moves
+            # animal is reproducing
+            action_list = []
+            reproduce_action = ReproduceAction()
+            reproduce_action.setAnimalType(self, "pred")
 
-        nearbyPrey = surroundings.getNearbyPrey()
+            open_tiles = self.getOpenTiles(surroundings)
+            reproduce_action.setendLocation(random.choice(open_tiles))
+            reproduce_action.setPartnerLocation(i)
+          
+            action_list.append(reproduce_action)
 
-        for i in nearbyPrey:
-            # can mate
-            if (i.is_female != self.is_female) and (i.checkIsFertile):
-                # check if can reproduce, will be true if yes
-                current_action_list = []
-                reproduce_action = ReproduceAction()
-                reproduce_action.setAnimalType(self, "prey")
-
-                open_tiles = self.getOpenTiles(surroundings)
-                reproduce_action.setendLocation(random.choice(open_tiles))
-
-                current_action_list.append(reproduce_action)
-                return current_action_list
-            else:
-                #cannot mate
-                return []
+            
+            self.reprDelay = 0;
+            return action_list
+            
 
     def preyReact(self, animal_sr):
         #print(self.currFood)
@@ -89,10 +89,13 @@ class Prey(Animal):
             if action_list:
                 return action_list
 
-        if self.is_fertile:
+        if self.checkIsFertile():
             action_list = self.reproduce(animal_sr)
+
             if action_list:
                 return action_list
+                
+            
 
         # if nothing happens, will randomly move
 

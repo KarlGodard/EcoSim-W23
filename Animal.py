@@ -28,6 +28,7 @@ class Animal:
         self.xmax = xmax
         self.ymax = ymax
         self.age = 0
+        self.reprDelay = 0
 
     def move(self, dx, dy, xmax, ymax):
         # print out of bounds statement for edges
@@ -49,7 +50,7 @@ class Animal:
         while (dx + self.position_x, dy + self.position_y) in invalid_locs:
             dx = random.choice([-1, 0, 1])
             dy = random.choice([-1, 0, 1])
-          
+
         return self.move(dx, dy, self.xmax, self.ymax)
 
     def set_random_location(self):
@@ -69,11 +70,12 @@ class Animal:
         max_y = min(self.size_y, loc[1] + search_dist + 1)
         for i in range(min_x, max_x):
             for j in range(min_y, max_y):
-                if self.locToTile((i, j)).occupied == False:
+                newTile = self.locToTile((i, j))
+                if newTile.has_pred == 0 and newTile.has_prey == 0 and newTile.has_water == 0:
                     locs_empty_tile.append((i, j))
 
         return locs_empty_tile
-  
+
     def eatPlant(self, surroundings):
         action_list = []
         # nearbyFood is coordinate of nearest plant
@@ -98,12 +100,12 @@ class Animal:
         #TODO: move towards NEAREST plant, not just the first plant observed
         invalid_locs = surroundings.getNearbyPrey(
         ) + surroundings.getNearbyPredators() + surroundings.getNearbyWater()
-      
+
         moveaction = self.genMoveAction(nearbyPlants[0], invalid_locs)
         if moveaction is not None:
             action_list.append(moveaction)
         return action_list
-      
+
     def genMoveAction(self, target, invalid_locs):
         dx = -1
         dy = -1
@@ -116,17 +118,18 @@ class Animal:
         elif target[1] == self.position_y:
             dy = 0
         destination = (self.position_x + dx, self.position_y + dy)
-      
+
         if destination not in invalid_locs:
             moveaction = MoveAction()
             moveaction.setstartLocation((self.position_x, self.position_y))
-            moveaction.setendLocation((self.position_x + dx, self.position_y + dy))
-    
+            moveaction.setendLocation(
+                (self.position_x + dx, self.position_y + dy))
+
             self.position_x += dx
             self.position_y += dy
             return moveaction
         return None
-      
+
     def waterReact(self, surroundings):
         # check what's around
         action_list = []
@@ -143,36 +146,25 @@ class Animal:
                 action_drink = DrinkAction()
                 action_list.append(action_drink)
                 return action_list
-                      
-      
+
         invalid_locs = surroundings.getNearbyPrey(
         ) + surroundings.getNearbyPredators() + surroundings.getNearbyWater()
-      
+
         moveaction = self.genMoveAction(nearbyWater[0], invalid_locs)
         if moveaction is not None:
             action_list.append(moveaction)
-          
+
         return action_list
-    
-    # def tempReact(self, surroundings):
-    #     temp = surroundings.getTemp()
-    #     # temp too high or low, animal dies
-    #     if temp > 110 or temp < 0:
-    #         rand = randrange(0, 1600)
-    #         # so some animals die
-    #     if (rand < min((temp - 110)**2, (temp)**2)):
-    #         self.kill(self)
 
     def checkIsFertile(self):
         if self.currFood < (self.maxFood * 0.75) or self.currWater < (
-                self.maxWater * 0.75) or self.age < 10:  #changed from 0.5
+                self.maxWater * 0.75
+        ) or self.age < 10 or self.reprDelay < 5:  #changed from 0.5
             self.isFertile = 0
         else:
             self.isFertile = 1
-            # do age later
 
+        return self.isFertile
 
-
-
-
-
+    def resetReprDelay(self):
+        self.reprDelay = 0

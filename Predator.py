@@ -34,6 +34,7 @@ class Predator(Animal):
         self.xmax = xmax
         self.ymax = ymax
         self.age = 0
+        self.reprDelay = 0
 
     def eatPrey(self, surroundings):
         # a list of preys
@@ -68,24 +69,26 @@ class Predator(Animal):
 
   
     def reproduce(self, surroundings):
-        nearbyPreds = surroundings.getNearbyPredators()
-        for i in nearbyPreds:
-            if (i.is_female != self.is_female) and (i.checkIsFertile):
-                # can mate: opposite genders, both fertile, other didnt move
-                # neither animal moves
-                # animal is reproducing
-                action_list = []
-                reproduce_action = ReproduceAction()
-                reproduce_action.setAnimalType(self, "pred")
+        nearbyMates = surroundings.getNearbyMates()
+        for i in nearbyMates:
+            
+            # can mate: opposite genders, both fertile, other didnt move
+            # neither animal moves
+            # animal is reproducing
+            action_list = []
+            reproduce_action = ReproduceAction()
+            reproduce_action.setAnimalType(self, "pred")
 
-                open_tiles = self.getOpenTiles(surroundings)
-                reproduce_action.setendLocation(random.choice(open_tiles))
-              
-                action_list.append(reproduce_action)
-                return action_list
-            else:
-                # mating conditions do not work, return False
-                return []
+            open_tiles = self.getOpenTiles(surroundings)
+            reproduce_action.setendLocation(random.choice(open_tiles))
+            reproduce_action.setPartnerLocation(i)
+          
+            action_list.append(reproduce_action)
+
+            
+            self.reprDelay = 0;
+            return action_list
+            
 
     def predReact(self, animal_sr):
         # make use_resource function: use food and water (small amts) for any action; call it here
@@ -123,7 +126,7 @@ class Predator(Animal):
             if action_list:
                 return action_list
                 
-            return action_list
+          
 
         
         

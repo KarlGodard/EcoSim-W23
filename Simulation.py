@@ -56,7 +56,9 @@ class Simulation():
             animal_sr.setNearbyPredators(nearby_predators)
             animal_sr.setNearbyPrey(nearby_prey)
             nearby_tiles = self.map.getNearbyWater(animal)
-
+            nearby_viable_mates = self.map.getViableMates(animal)
+            animal_sr.setViableMates(nearby_viable_mates)
+          
             animal_sr.setNearbyWater(nearby_tiles)
             temp = self.map.getTemp()
             animal_sr.setTemp(temp)
@@ -78,9 +80,9 @@ class Simulation():
 
                         id = self.map.map[action.foodLocation[1]][
                             action.foodLocation[0]].animal_id
-                        print("Animal " + str(id) + " eaten by " + str(animal))
-                        if id == animal:
-                            print("Error: animal eats itself")
+                        #print("Animal " + str(id) + " eaten by " + str(animal))
+                        #if id == animal:
+                            #print("Error: animal eats itself")
                         self.map.delete_animal(id)
                     elif action.foodType == "plant":
                         self.map.delete_plant(action.foodLocation)
@@ -94,16 +96,18 @@ class Simulation():
                     #position x, position y
 
                 elif (action.type == "reproduce"):
-                    print("Animal born at " + str(aciton.endLocation))
+                    print("Animal born at " + str(action.birthLocation))
                     if animal_obj.is_prey:
-                        self.map.create_prey(animal, action.endLocation)
+                        self.map.create_prey(animal, action.birthLocation)
                     else:
-                        self.map.create_predator(animal, action.endLocation)
+                        self.map.create_predator(animal, action.birthLocation)
+
+                    self.map.locToAnimal(action.partnerLocation).resetReprDelay()
 
                 elif (action.type == "drink"):
                     pass  #no action needed
                 elif (action.type == "die"):
-                    print("Animal " + str(animal) + " died")
+                    #print("Animal " + str(animal) + " died")
                     self.map.delete_animal(animal)
                     survives = False
                     break  #remove from map, delete animal
@@ -115,6 +119,7 @@ class Simulation():
                 self.map.next_order.append(animal)
 
             animal_obj.age += 1
+            animal_obj.reprDelay += 1
 
             #end of animal loop
             animal = self.map.getNextAnimal()

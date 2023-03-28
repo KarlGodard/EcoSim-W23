@@ -51,24 +51,21 @@ class MoveAction(Action):
 class ReproduceAction(Action):
     def __init__(self):
         self.type = "reproduce"
-        self.startLocation = (0,0)
-        self.endLocation = (0,0)
+        self.birthLocation = (0,0)
+        self.partnerLocation = (0,0)
         self.animalType = None
 
-    def setstartLocation(self, startLocation):
-        self.startLocation = startLocation
-
-    def setendLocation(self, endLocation):
-        self.endLocation = endLocation
+    def setBirthLocation(self, birthLocation):
+        self.birthLocation = birthLocation
 
     def setAnimalType(self, animalType):
         self.animalType = animalType
 
-    def getstartLocat(self):
-        return self.startLocation
+    def setPartnerLocation(self, partnerLocation):
+        self.partnerLocation = partnerLocation
 
-    def getendLocation(self):
-        return self.endLocation
+    def getStartLocation(self):
+        return self.startLocation
 
     def getAnimalType(self):
         return self.animalType
