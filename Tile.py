@@ -1,5 +1,5 @@
-
 class Tile:
+
     def __init__(self, temp=60, terrain="E", water=False, plant=False):
         self.terrain = terrain
         self.occupied = False
@@ -11,7 +11,6 @@ class Tile:
         self.has_plant = plant
         self.has_pred = 0
         self.has_prey = 0
-
 
     def get_terrain(self):
         return self.terrain
@@ -29,6 +28,7 @@ class Tile:
         else:
             self.occupied = False
             return "E"
+
     # this is a bigger function to just search what lives there
 
     def is_pred(self):
@@ -70,5 +70,4 @@ class Tile:
         return
 
     def is_animal(self):
-        return self.is_predator or self.is_prey
-
+        return self.has_pred or self.has_prey

@@ -323,7 +323,7 @@ class Map:
         max_y = min(self.size_y, loc[1] + search_dist + 1)
         for i in range(min_x, max_x):
             for j in range(min_y, max_y):
-                if self.map[j][i].has_animal:
+                if self.map[j][i].is_animal():
                     other = self.IDtoAnimal[self.map[j][i].animal_id]
                     if other.checkIsFertile() and (other.isPrey == animal.isPrey) and other.is_female != animal.is_female:
                         locs_with_mate.append((i, j))

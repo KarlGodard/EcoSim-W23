@@ -63,31 +63,31 @@ class Prey(Animal):
         #print(self.currFood)
         # make use_resource function: use food and water (small amts) for any action; call it here
 
-        self.currWater -= self.maxWater * 0.05
-        self.currFood -= self.maxFood * 0.05
+        # self.currWater -= self.maxWater * 0.05
+        # self.currFood -= self.maxFood * 0.05
         current_action_list = []
 
         self.check_state()  #check if it is alive
         #self.tempReact(animal_sr)
-        if self.alive == 0:
-            #del(self) #don't need this anymore
-            die_action = DieAction()
-            current_action_list.append(die_action)
-            return current_action_list
-            # tell sim to delete self
+        # if self.alive == 0:
+        #     #del(self) #don't need this anymore
+        #     die_action = DieAction()
+        #     current_action_list.append(die_action)
+        #     return current_action_list
+        #     # tell sim to delete self
 
-        if self.currFood < (0.75 * self.maxFood):
-            action_list = self.eatPlant(
-                animal_sr
-            )  #should be a list with coords of plant and 2, or None if nothing was eaten
+        # if self.currFood < (0.75 * self.maxFood):
+        #     action_list = self.eatPlant(
+        #         animal_sr
+        #     )  #should be a list with coords of plant and 2, or None if nothing was eaten
 
-            if action_list:
-                return action_list
+        #     if action_list:
+        #         return action_list
 
-        if self.currWater < (.75 * self.maxWater):
-            action_list = self.waterReact(animal_sr)
-            if action_list:
-                return action_list
+        # if self.currWater < (.75 * self.maxWater):
+        #     action_list = self.waterReact(animal_sr)
+        #     if action_list:
+        #         return action_list
 
         if self.checkIsFertile():
             action_list = self.reproduce(animal_sr)
