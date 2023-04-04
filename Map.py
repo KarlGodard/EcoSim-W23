@@ -190,7 +190,7 @@ class Map:
         tile = self.convertIDtoTile(animal_id)
         newTile = self.locToTile(loc)
         if loc == self.IDtoLoc[animal_id]:
-             return
+            return
 
         #clear old tile
         tile.animal = False
@@ -200,7 +200,8 @@ class Map:
         tile.occupied = 0
 
         #update new tile'
-        if (newTile.has_pred != 0 or newTile.has_prey != 0 or newTile.has_water != 0):
+        if (newTile.has_pred != 0 or newTile.has_prey != 0
+                or newTile.has_water != 0):
             #exit(1)
             print('Illegal action: movement onto occupied tile')
 
@@ -221,18 +222,19 @@ class Map:
         tile.occupied = False
         tile.animal_id = -1
         self.numAnimals = self.numAnimals - 1
-      
+
         #print("Deleting animal " + str(animal_id))
         #print(self.current_order)
-        if animal_id in self.current_order and self.current_order.index(animal_id) >= self.current_index:
-           self.current_order.remove(animal_id)
+        if animal_id in self.current_order and self.current_order.index(
+                animal_id) >= self.current_index:
+            self.current_order.remove(animal_id)
         #print(self.current_order)
 
         #print(self.next_order)
         assert (len(self.next_order) == len(set(self.next_order)))
         if animal_id in self.next_order:
             self.next_order.remove(animal_id)
-        #print(self.next_order)  
+        #print(self.next_order)
 
         if self.convertIDtoAnimal(animal_id).is_prey:
             self.numPrey -= 1
@@ -281,7 +283,7 @@ class Map:
     def getNearbyPrey(self, animalID):
         loc = self.convertIDtoLoc(animalID)
         locs_with_prey = []
-        
+
         search_dist = 2
         min_x = max(0, loc[0] - search_dist)
         max_x = min(self.size_x, loc[0] + search_dist + 1)
@@ -309,6 +311,7 @@ class Map:
                     locs_with_water.append((i, j))
 
         return locs_with_water
+
     def getViableMates(self, animal_id):
         animal = self.IDtoAnimal[animal_id]
         if not animal.checkIsFertile():
@@ -325,10 +328,12 @@ class Map:
             for j in range(min_y, max_y):
                 if self.map[j][i].is_animal():
                     other = self.IDtoAnimal[self.map[j][i].animal_id]
-                    if other.checkIsFertile() and (other.isPrey == animal.isPrey) and other.is_female != animal.is_female:
+                    if other.checkIsFertile() and (
+                            other.is_prey == animal.is_prey
+                    ) and other.is_female != animal.is_female:
                         locs_with_mate.append((i, j))
         return locs_with_mate
-      
+
     def getTemp(self):
         return self.currTemp
 
