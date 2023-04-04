@@ -20,56 +20,56 @@ class Map:
     def __init__(self, mapSize, startingTemp, rateOfTempChange,
                  startingAnimalDistribution):
         self.mapSize = mapSize  #tuple
-        self.size_x = mapSize[0]
-        self.size_y = mapSize[1]
+        self.sizeX = mapSize[0]
+        self.sizeY = mapSize[1]
         self.startTemp = startingTemp
         self.currTemp = startingTemp
         self.numAnimals = 0
         self.numPredators = 0
         self.numPrey = 0
-        self.animal_id = 0
-        self.map = [[Tile() for i in range(self.size_x)]
-                    for j in range(self.size_y)]
-        self.river_maker()
-        self.pond_maker()
-        self.pond_maker()
-        self.pond_maker()
+        self.animalID = 0
+        self.map = [[Tile() for i in range(self.sizeX)]
+                    for j in range(self.sizeY)]
+        self.riverMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
 
         #self.create_graph()
 
         self.IDtoAnimal = {}
         self.IDtoLoc = {}  # dictionary from animal IDs to locations
-        self.current_order = [
+        self.currentOrder = [
         ]  # list of animal ID's: specifies order of action
-        self.current_index = 0
-        self.next_order = []
-        self.predator_count = []
-        self.prey_count = []
-        self.predator_count.append(self.getNumPredators())
-        self.prey_count.append(self.getNumPrey())
+        self.currentIndex = 0
+        self.nextOrder = []
+        self.predatorCount = []
+        self.preyCount = []
+        self.predatorCount.append(self.getNumPredators())
+        self.preyCount.append(self.getNumPrey())
 
-        self.initialize_animals()
-        self.generate_initial_plants()
+        self.initializeAnimals()
+        self.generateInitialPlants()
 
-    def convertIDtoLoc(self, animal_id):
-        return self.IDtoLoc[animal_id]
+    def convertIDtoLoc(self, animalID):
+        return self.IDtoLoc[animalID]
 
-    def convertIDtoTile(self, animal_id):
-        animal_loc = self.convertIDtoLoc(animal_id)
-        return self.map[animal_loc[1]][animal_loc[0]]
+    def convertIDtoTile(self, animalID):
+        animalLoc = self.convertIDtoLoc(animalID)
+        return self.map[animalLoc[1]][animalLoc[0]]
 
-    def convertIDtoAnimal(self, animal_id):
-        return self.IDtoAnimal[animal_id]
+    def convertIDtoAnimal(self, animalID):
+        return self.IDtoAnimal[animalID]
 
     def locToTile(self, loc):
         return self.map[loc[1]][loc[0]]
 
     def locToAnimal(self, loc):
-        return self.IDtoAnimal[self.locToTile(loc).animal_id]
+        return self.IDtoAnimal[self.locToTile(loc).animalID]
 
     # function that makes a sine function that we
     # can pass back to tile to make curvy rivers
-    def river_maker(self):
+    def riverMaker(self):
         coef = [random.random() for i in range(4)]
         if (coef[3] > 0.75):
             coef[3] = coef[3] - 0.5
@@ -77,20 +77,18 @@ class Map:
             coef[3] = coef[3] + 0.5
         if (coef[0] < 0.5):
             coef[0] = coef[0] + 0.5
-        for i in range(self.size_y):
-            #j = 0
-            #j = random.choice(range(self.size_x))
+        for i in range(self.sizeY):
             j = int(3 * coef[0] * (math.sin(coef[1] * i + coef[2])) +
-                    coef[3] * self.size_x)
-            if (j >= 0 and j < self.size_x):
-                self.map[i][j].set_water()
+                    coef[3] * self.sizeX)
+            if (j >= 0 and j < self.sizeX):
+                self.map[i][j].setWater()
 
         #return
 
-    def pond_maker(self):
+    def pondMaker(self):
         # generate random spot for pond
-        x_cord = int(random.randint(0, self.size_x - 8))
-        y_cord = int(random.randint(0, self.size_y - 8))
+        xCord = int(random.randint(0, self.sizeX - 8))
+        yCord = int(random.randint(0, self.sizeY - 8))
 
         # size - height (5-8), width (5-8)
         height = int(random.randint(5, 8))
@@ -100,252 +98,252 @@ class Map:
             # generating extra dimensions so pond isn't square
             shift = int(random.randint(-2, 2))
             for j in range(height):
-                if (y_cord + i < self.size_y
-                        and x_cord + j + shift < self.size_x):
-                    self.map[y_cord + i][x_cord + j + shift].set_water()
+                if (yCord + i < self.sizeY
+                        and xCord + j + shift < self.sizeX):
+                    self.map[yCord + i][xCord + j + shift].setWater()
 
-    def generate_initial_plants(self):
-        self.generate_plants(.85)
+    def generateInitialPlants(self):
+        self.generatePlants(.85)
         return
 
-    def generate_plants(self, threshhold=.99):
+    def generatePlants(self, threshhold=.99):
         # if t = 0, use 0.90 for p threshoold. otherwise use 0.99
-        for i in range(self.size_x):
-            for j in range(self.size_y):
+        for i in range(self.sizeX):
+            for j in range(self.sizeY):
                 if (self.currTemp >= 40 and self.currTemp <= 80) and (
-                        self.map[j][i].get_terrain() == "E"):
+                        self.map[j][i].getTerrain() == "E"):
                     #gets random number between 0 and 1
                     p = random.random()
 
                     if p > threshhold:
-                        self.map[j][i].set_plant()
+                        self.map[j][i].setPlant()
 
         return
 
-    def delete_plant(self, loc):
+    def deletePlant(self, loc):
         tile = self.locToTile(loc)
         #print("Plant deleted at ", loc)
-        tile.has_plant = False
+        tile.hasPlant = False
         tile.terrain = "E"
         return
 
-    def initialize_animals(self):
-        for i in range(self.size_x):
-            for j in range(self.size_y):
-                if self.map[j][i].has_water:
+    def initializeAnimals(self):
+        for i in range(self.sizeX):
+            for j in range(self.sizeY):
+                if self.map[j][i].hasWater:
                     continue
                 p1 = .1
                 p2 = 0.05
-                newpredator = (np.random.rand() < p1)  #bernoulli(p1)
-                newprey = (np.random.rand() < p2)  #bernoulli(p2)
+                newPredator = (np.random.rand() < p1)  #bernoulli(p1)
+                newPrey = (np.random.rand() < p2)  #bernoulli(p2)
                 location = (i, j)
-                if (newpredator == 1):
-                    newprey = False
-                    self.create_predator(location)
-                if (newprey == 1):
-                    self.create_prey(location)
-        self.current_order = copy.deepcopy(self.next_order)
-        self.next_order = []
+                if (newPredator == 1):
+                    newPrey = False
+                    self.createPredator(location)
+                if (newPrey == 1):
+                    self.createPrey(location)
+        self.currentOrder = copy.deepcopy(self.nextOrder)
+        self.nextOrder = []
         return
 
-    def create_predator(self, loc):
+    def createPredator(self, loc):
         # loc is pass in as "x, y"
         x = loc[0]
         y = loc[1]
-        newPred = Predator(self.size_x, self.size_y, x, y, self.animal_id)
-        self.IDtoAnimal[self.animal_id] = newPred
-        self.IDtoLoc[self.animal_id] = loc
-        self.next_order.append(self.animal_id)
-        self.map[y][x].set_predator()
+        newPred = Predator(self.sizeX, self.sizeY, x, y, self.animalID)
+        self.IDtoAnimal[self.animalID] = newPred
+        self.IDtoLoc[self.animalID] = loc
+        self.nextOrder.append(self.animalID)
+        self.map[y][x].setPredator()
 
         #set animal_id
-        self.map[y][x].animal_id = self.animal_id
+        self.map[y][x].animalID = self.animalID
 
-        self.animal_id = self.animal_id + 1
+        self.animalID = self.animalID + 1
         self.numAnimals = self.numAnimals + 1
         self.numPredators += 1
 
         return
 
-    def create_prey(self, loc):
+    def createPrey(self, loc):
         x = loc[0]
         y = loc[1]
 
-        newPrey = Prey(self.size_x, self.size_y, x, y, self.animal_id)
-        self.IDtoLoc[self.animal_id] = loc
-        self.IDtoAnimal[self.animal_id] = newPrey
-        self.next_order.append(self.animal_id)
-        self.map[y][x].set_prey()
+        newPrey = Prey(self.sizeX, self.sizeY, x, y, self.animalID)
+        self.IDtoLoc[self.animalID] = loc
+        self.IDtoAnimal[self.animalID] = newPrey
+        self.nextOrder.append(self.animalID)
+        self.map[y][x].setPrey()
 
         #set animal_id
-        self.map[y][x].animal_id = self.animal_id
+        self.map[y][x].animalID = self.animalID
 
-        self.animal_id = self.animal_id + 1
+        self.animalID = self.animalID + 1
         self.numAnimals = self.numAnimals + 1
         self.numPrey += 1
         return
 
-    def move_animal(self, animal_id, loc):
-        animal = self.convertIDtoAnimal(animal_id)
-        tile = self.convertIDtoTile(animal_id)
+    def moveAnimal(self, animalID, loc):
+        animal = self.convertIDtoAnimal(animalID)
+        tile = self.convertIDtoTile(animalID)
         newTile = self.locToTile(loc)
-        if loc == self.IDtoLoc[animal_id]:
+        if loc == self.IDtoLoc[animalID]:
             return
 
         #clear old tile
         tile.animal = False
-        tile.has_pred = False
-        tile.has_prey = False
-        tile.animal_id = -1
+        tile.hasPred = False
+        tile.hasPrey = False
+        tile.animalID = -1
         tile.occupied = 0
 
         #update new tile'
-        if (newTile.has_pred != 0 or newTile.has_prey != 0
-                or newTile.has_water != 0):
+        if (newTile.hasPred != 0 or newTile.hasPrey != 0
+                or newTile.hasWater != 0):
             #exit(1)
             print('Illegal action: movement onto occupied tile')
 
-        newTile.animal_id = animal_id
-        if animal.is_prey:
-            newTile.has_prey = True
+        newTile.animalID = animalID
+        if animal.isPrey:
+            newTile.hasPrey = True
         else:
-            newTile.has_pred = True
+            newTile.hasPred = True
 
         newTile.occupied = True
-        self.IDtoLoc[animal_id] = loc
+        self.IDtoLoc[animalID] = loc
         return
 
-    def delete_animal(self, animal_id):
-        tile = self.convertIDtoTile(animal_id)
-        tile.has_pred = 0
-        tile.has_prey = 0
+    def deleteAnimal(self, animalID):
+        tile = self.convertIDtoTile(animalID)
+        tile.hasPred = 0
+        tile.hasPrey = 0
         tile.occupied = False
-        tile.animal_id = -1
+        tile.animalID = -1
         self.numAnimals = self.numAnimals - 1
 
         #print("Deleting animal " + str(animal_id))
         #print(self.current_order)
-        if animal_id in self.current_order and self.current_order.index(
-                animal_id) >= self.current_index:
-            self.current_order.remove(animal_id)
+        if animalID in self.currentOrder and self.currentOrder.index(
+                animalID) >= self.currentIndex:
+            self.currentOrder.remove(animalID)
         #print(self.current_order)
 
         #print(self.next_order)
-        assert (len(self.next_order) == len(set(self.next_order)))
-        if animal_id in self.next_order:
-            self.next_order.remove(animal_id)
+        assert (len(self.nextOrder) == len(set(self.nextOrder)))
+        if animalID in self.nextOrder:
+            self.nextOrder.remove(animalID)
         #print(self.next_order)
 
-        if self.convertIDtoAnimal(animal_id).is_prey:
+        if self.convertIDtoAnimal(animalID).isPrey:
             self.numPrey -= 1
         else:
             self.numPredators -= 1
 
-        self.convertIDtoAnimal(animal_id).alive = False
+        self.convertIDtoAnimal(animalID).alive = False
 
-        self.IDtoAnimal.pop(animal_id)
-        self.IDtoLoc.pop(animal_id)
+        self.IDtoAnimal.pop(animalID)
+        self.IDtoLoc.pop(animalID)
 
         return
 
     def getNearbyPlants(self, animalID):
         loc = self.convertIDtoLoc(animalID)
-        locs_with_food = []
+        locsWithFood = []
         # search distance
-        search_dist = 2
-        min_x = max(0, loc[0] - search_dist)
-        max_x = min(self.size_x, loc[0] + search_dist + 1)
-        min_y = max(0, loc[1] - search_dist)
-        max_y = min(self.size_y, loc[1] + search_dist + 1)
-        for i in range(min_x, max_x):
-            for j in range(min_y, max_y):
-                if self.locToTile((i, j)).has_plant == True:
-                    locs_with_food.append((i, j))
+        searchDist = 2
+        minX = max(0, loc[0] - searchDist)
+        maxX = min(self.sizeX, loc[0] + searchDist + 1)
+        minY = max(0, loc[1] - searchDist)
+        maxY = min(self.sizeY, loc[1] + searchDist + 1)
+        for i in range(minX, maxX):
+            for j in range(minY, maxY):
+                if self.locToTile((i, j)).hasPlant == True:
+                    locsWithFood.append((i, j))
 
-        return locs_with_food
+        return locsWithFood
 
     def getNearbyPredators(self, animalID):
         loc = self.convertIDtoLoc(animalID)
-        locs_with_predators = []
+        locsWithPredators = []
 
-        search_dist = 2
-        min_x = max(0, loc[0] - search_dist)
-        max_x = min(self.size_x, loc[0] + search_dist + 1)
-        min_y = max(0, loc[1] - search_dist)
-        max_y = min(self.size_y, loc[1] + search_dist + 1)
-        for i in range(min_x, max_x):
-            for j in range(min_y, max_y):
-                if self.locToTile((i, j)).has_pred:
-                    locs_with_predators.append((i, j))
+        searchDist = 2
+        minX = max(0, loc[0] - searchDist)
+        maxX = min(self.sizeX, loc[0] + searchDist + 1)
+        minY = max(0, loc[1] - searchDist)
+        maxY = min(self.sizeY, loc[1] + searchDist + 1)
+        for i in range(minX, maxX):
+            for j in range(minY, maxY):
+                if self.locToTile((i, j)).hasPred:
+                    locsWithPredators.append((i, j))
 
-        return locs_with_predators
+        return locsWithPredators
 
     def getNearbyPrey(self, animalID):
         loc = self.convertIDtoLoc(animalID)
-        locs_with_prey = []
+        locsWithPrey = []
 
-        search_dist = 2
-        min_x = max(0, loc[0] - search_dist)
-        max_x = min(self.size_x, loc[0] + search_dist + 1)
-        min_y = max(0, loc[1] - search_dist)
-        max_y = min(self.size_y, loc[1] + search_dist + 1)
-        for i in range(min_x, max_x):
-            for j in range(min_y, max_y):
-                if self.locToTile((i, j)).has_prey:
-                    locs_with_prey.append((i, j))
+        searchDist = 2
+        minX = max(0, loc[0] - searchDist)
+        maxX = min(self.sizeX, loc[0] + searchDist + 1)
+        minY = max(0, loc[1] - searchDist)
+        maxY = min(self.sizeY, loc[1] + searchDist + 1)
+        for i in range(minX, maxX):
+            for j in range(minY, maxY):
+                if self.locToTile((i, j)).hasPrey:
+                    locsWithPrey.append((i, j))
 
-        return locs_with_prey
+        return locsWithPrey
 
     def getNearbyWater(self, animalID):
         loc = self.convertIDtoLoc(animalID)
-        locs_with_water = []
+        locsWithWater = []
         # search distance
-        search_dist = 2
-        min_x = max(0, loc[0] - search_dist)
-        max_x = min(self.size_x, loc[0] + search_dist + 1)
-        min_y = max(0, loc[1] - search_dist)
-        max_y = min(self.size_y, loc[1] + search_dist + 1)
-        for i in range(min_x, max_x):
-            for j in range(min_y, max_y):
-                if self.locToTile((i, j)).has_water:
-                    locs_with_water.append((i, j))
+        searchDist = 2
+        minX = max(0, loc[0] - searchDist)
+        maxX = min(self.sizeX, loc[0] + searchDist + 1)
+        minY = max(0, loc[1] - searchDist)
+        maxY = min(self.sizeY, loc[1] + searchDist + 1)
+        for i in range(minX, maxX):
+            for j in range(minY, maxY):
+                if self.locToTile((i, j)).hasWater:
+                    locsWithWater.append((i, j))
 
-        return locs_with_water
+        return locsWithWater
 
-    def getViableMates(self, animal_id):
-        animal = self.IDtoAnimal[animal_id]
+    def getViableMates(self, animalID):
+        animal = self.IDtoAnimal[animalID]
         if not animal.checkIsFertile():
             return []
-        loc = self.convertIDtoLoc(animal_id)
-        locs_with_mate = []
+        loc = self.convertIDtoLoc(animalID)
+        locsWithMate = []
         # search distance
-        search_dist = 2
-        min_x = max(0, loc[0] - search_dist)
-        max_x = min(self.size_x, loc[0] + search_dist + 1)
-        min_y = max(0, loc[1] - search_dist)
-        max_y = min(self.size_y, loc[1] + search_dist + 1)
-        for i in range(min_x, max_x):
-            for j in range(min_y, max_y):
-                if self.map[j][i].is_animal():
-                    other = self.IDtoAnimal[self.map[j][i].animal_id]
+        searchDist = 2
+        minX = max(0, loc[0] - searchDist)
+        maxX = min(self.sizeX, loc[0] + searchDist + 1)
+        minY = max(0, loc[1] - searchDist)
+        maxY = min(self.sizeY, loc[1] + searchDist + 1)
+        for i in range(minX, maxX):
+            for j in range(minY, maxY):
+                if self.map[j][i].isAnimal():
+                    other = self.IDtoAnimal[self.map[j][i].animalID]
                     if other.checkIsFertile() and (
-                            other.is_prey == animal.is_prey
-                    ) and other.is_female != animal.is_female:
-                        locs_with_mate.append((i, j))
-        return locs_with_mate
+                            other.isPrey == animal.isPrey
+                    ) and other.isFemale != animal.isFemale:
+                        locsWithMate.append((i, j))
+        return locsWithMate
 
     def getTemp(self):
         return self.currTemp
 
     def getNextAnimal(self):
-        if self.current_index >= len(self.current_order):
-            self.current_index = 0
-            self.current_order = copy.deepcopy(self.next_order)
-            self.next_order = []
+        if self.currentIndex >= len(self.currentOrder):
+            self.currentIndex = 0
+            self.currentOrder = copy.deepcopy(self.nextOrder)
+            self.nextOrder = []
             return None
 
-        self.current_index += 1
-        return self.current_order[self.current_index - 1]
+        self.currentIndex += 1
+        return self.currentOrder[self.currentIndex - 1]
 
     def getNumAnimals(self):
         return self.numAnimals
@@ -356,14 +354,14 @@ class Map:
     def getNumPrey(self):
         return self.numPrey
 
-    def create_graph(self):
-        x_axis = []
+    def createGraph(self):
+        xAxis = []
         for i in range(0, 101):
             if (i % 2 == 0):
-                x_axis.append(i)
+                xAxis.append(i)
 
-        plt.plot(self.predator_count, label="Predator Count")
-        plt.plot(self.prey_count, label="Prey Count")
+        plt.plot(self.predatorCount, label="Predator Count")
+        plt.plot(self.preyCount, label="Prey Count")
         plt.legend(loc="upper left")
         plt.title("Population Distribution")
         plt.xlabel("Time")

@@ -1,22 +1,25 @@
 class Action:
+
     def __init__(self, actionType=None):
         self.type = actionType
 
     def setActionType(self, actionType):
         self.type = actionType
 
+
 class EatAction(Action):
+
     def __init__(self):
         self.type = "eat"
         self.foodType = None
-        self.foodLocation = (0,0)
+        self.foodLocation = (0, 0)
         self.animalID = None
 
     def setFoodLocation(self, foodLocation):
         self.foodLocation = foodLocation
 
     def setFoodType(self, foodType):
-        self.foodType = foodType 
+        self.foodType = foodType
 
     def setFoodID(self, animalID):
         set.animalID = animalID
@@ -30,11 +33,13 @@ class EatAction(Action):
     def getFoodID(self, animalID):
         return set.animalID
 
+
 class MoveAction(Action):
+
     def __init__(self):
         self.type = "move"
-        self.startLocation = (0,0)
-        self.endLocation = (0,0)
+        self.startLocation = (0, 0)
+        self.endLocation = (0, 0)
 
     def setstartLocation(self, startLocation):
         self.startLocation = startLocation
@@ -48,11 +53,13 @@ class MoveAction(Action):
     def getendLocation(self):
         return self.endLocation
 
+
 class ReproduceAction(Action):
+
     def __init__(self):
         self.type = "reproduce"
-        self.birthLocation = (0,0)
-        self.partnerLocation = (0,0)
+        self.birthLocation = (0, 0)
+        self.partnerLocation = (0, 0)
         self.animalType = None
 
     def setBirthLocation(self, birthLocation):
@@ -64,18 +71,23 @@ class ReproduceAction(Action):
     def setPartnerLocation(self, partnerLocation):
         self.partnerLocation = partnerLocation
 
-    def getStartLocation(self):
-        return self.startLocation
+    def getBirthLocation(self):
+        return self.birthLocation
 
     def getAnimalType(self):
         return self.animalType
 
+    def getPartnerLocation(self):
+        return self.partnerLocation
 
 
 class DrinkAction(Action):
+
     def __init__(self):
         self.type = "drink"
 
+
 class DieAction(Action):
+
     def __init__(self):
         self.type = "die"

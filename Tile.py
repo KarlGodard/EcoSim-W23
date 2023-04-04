@@ -4,25 +4,25 @@ class Tile:
         self.terrain = terrain
         self.occupied = False
         self.animal = False
-        self.animal_id = -1
+        self.animalID = -1
         # this is in Fahrenheit because we are Americans
         self.temp = temp
-        self.has_water = water
-        self.has_plant = plant
-        self.has_pred = 0
-        self.has_prey = 0
+        self.hasWater = water
+        self.hasPlant = plant
+        self.hasPred = 0
+        self.hasPrey = 0
 
-    def get_terrain(self):
+    def getTerrain(self):
         return self.terrain
 
     def get_organism(self):
-        if self.has_pred:
+        if self.hasPred:
             self.occupied = True
             return "P"
-        elif self.has_prey:
+        elif self.hasPrey:
             self.occupied = True
             return "p"
-        elif self.has_plant:
+        elif self.hasPlant:
             self.occupied = True
             return "F"
         else:
@@ -31,43 +31,43 @@ class Tile:
 
     # this is a bigger function to just search what lives there
 
-    def is_pred(self):
-        return self.has_pred
+    def isPred(self):
+        return self.hasPred
 
-    def is_prey(self):
-        return self.has_prey
+    def isPrey(self):
+        return self.hasPrey
 
-    def is_plant(self):
-        return self.has_plant
+    def isPlant(self):
+        return self.hasPlant
 
-    def is_water(self):
-        return self.has_water
+    def isWater(self):
+        return self.hasWater
 
-    def set_water(self):
-        self.has_water = True
+    def setWater(self):
+        self.hasWater = True
         self.occupied = True
         self.terrain = "W"
         return
 
-    def set_plant(self):
-        self.has_plant = True
+    def setPlant(self):
+        self.hasPlant = True
         self.occupied = True
         self.terrain = "F"
         return
 
-    def set_predator(self):
+    def setPredator(self):
         self.animal = True
-        self.has_pred = self.has_pred + 1
+        self.hasPred = self.hasPred + 1
         self.occupied = True
         self.terrain = "P"
         return
 
-    def set_prey(self):
+    def setPrey(self):
         self.animal = True
-        self.has_prey = self.has_prey + 1
+        self.hasPrey = self.hasPrey + 1
         self.occupied = True
         self.terrain = "p"
         return
 
-    def is_animal(self):
-        return self.has_pred or self.has_prey
+    def isAnimal(self):
+        return self.hasPred or self.hasPrey

@@ -10,7 +10,7 @@ class SensoryRange:
         self.nearbyPredators = []  # list of predator animal objects
         self.nearbyPrey = []  # list of predator animal objects
         self.nearbyPlants = nearbyPlants  # coordinate of nearest food
-        self.nearbyWater = nearbyWater  # coordinate of nearest water 
+        self.nearbyWater = nearbyWater  # coordinate of nearest water
         self.viableMates = []
 
     def setNearbyPredators(self, preds):
@@ -25,10 +25,9 @@ class SensoryRange:
     def setNearbyWater(self, loc):
         self.nearbyWater = loc
 
-    def setViableMates(self, mates):
+    def setNearbyMates(self, mates):
         self.viableMates = mates
 
-      
     def setTemp(self, temp):
         self.temp = temp
 
@@ -44,9 +43,8 @@ class SensoryRange:
     def getNearbyWater(self):
         return self.nearbyWater
 
-    def getViableMates(self, mates):
+    def getNearbyMates(self):
         return self.viableMates
 
-      
     def getTemp(self):
         return self.temp

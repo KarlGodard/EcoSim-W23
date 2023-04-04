@@ -14,137 +14,99 @@ class Predator(Animal):
     def __init__(self,
                  xmax,
                  ymax,
-                 position_x=None,
-                 position_y=None,
+                 positionX=None,
+                 positionY=None,
                  animalID=None):
         self.currFood = random.randint(50, 100)
         self.maxFood = 100
         self.currWater = 100
         self.maxWater = 100
-        self.is_female = random.choice([0, 1])
-        self.is_prey = 0
-        self.is_fertile = 0
+        self.isFemale = random.choice([0, 1])
+        self.isPrey = 0
+        self.isFertile = 0
         self.animalId = animalID
-        if position_x == None:
-            self.set_random_location()
+        if positionX == None or positionY == None:
+            self.setRandomLocation()
         else:
-            self.position_x = position_x
-            self.position_y = position_y
+            self.positionX = positionX
+            self.positionY = positionY
         self.alive = 1
         self.xmax = xmax
         self.ymax = ymax
         self.age = 0
         self.reprDelay = 0
 
-    def eatPrey(self, surroundings):
-        # a list of preys
-        action_list = []
-        # nearbyFood is coordinate of nearest plant
-        nearbyPrey = surroundings.getNearbyPrey()
-
-        if nearbyPrey == []:
-            # returns None if cannot eat plant
-            return action_list
-        for loc in nearbyPrey:
-            #eat plant if location is found adjacent to the animal
-            if (max(abs(loc[0] - self.position_x),
-                    abs(loc[1] - self.position_y)) <= 1):
-                self.currFood += (0.25 * self.maxFood)
-                # returns the coordinate of the water
-                action_eat = EatAction()
-                action_eat.setFoodType("animal")
-                action_eat.setFoodLocation(loc)
-                action_list.append(action_eat)
-                return action_list
-
-        #move towards the nearest food location
-        invalid_locs = surroundings.getNearbyPrey(
-        ) + surroundings.getNearbyPredators() + surroundings.getNearbyWater()
-      
-        moveaction = self.genMoveAction(nearbyPrey[0], invalid_locs)
-        if moveaction is not None:
-            action_list.append(moveaction)
-        return action_list
 
 
-  
     def reproduce(self, surroundings):
         nearbyMates = surroundings.getNearbyMates()
         for i in nearbyMates:
-            
+
             # can mate: opposite genders, both fertile, other didnt move
             # neither animal moves
             # animal is reproducing
-            action_list = []
-            reproduce_action = ReproduceAction()
-            reproduce_action.setAnimalType(self, "pred")
+            actionList = []
+            reproduceAction = ReproduceAction()
+            reproduceAction.setAnimalType("pred")
 
-            open_tiles = self.getOpenTiles(surroundings)
-            reproduce_action.setendLocation(random.choice(open_tiles))
-            reproduce_action.setPartnerLocation(i)
-          
-            action_list.append(reproduce_action)
+            openTiles = self.getOpenTiles(surroundings)
+            reproduceAction.setBirthLocation(random.choice(openTiles))
+            reproduceAction.setPartnerLocation(i)
 
-            
+            actionList.append(reproduceAction)
+
             self.reprDelay = 0
-            return action_list
-            
+            return actionList
 
-    def predReact(self, animal_sr):
+    def predReact(self, animalSr):
         # make use_resource function: use food and water (small amts) for any action; call it here
 
         # food and water will decrease by 10% no matter what
-        # self.currWater -= self.maxWater * 0.1
-        # self.currFood -= self.maxFood * 0.1
-        current_action_list = []
+        self.currWater -= self.maxWater * 0.03
+        self.currFood -= self.maxFood * 0.03
+        currentActionList = []
 
-        self.check_state()  #check if it is alive
+        self.checkState()  #check if it is alive
         #self.tempReact()
-        # if not self.alive:
-        #     die_action = DieAction()
-        #     current_action_list.append(die_action)
-        #     return current_action_list
-        #     # tell sim to delete self
+        if not self.alive:
+            dieAction = DieAction()
+            currentActionList.append(dieAction)
+            return currentActionList
+            # tell sim to delete self
 
-        # if self.currFood < (0.75 * self.maxFood):
-        #     action_list = self.eatPrey(
-        #         animal_sr
-        #     )  #should be a list with coords and 1 or 2 depending on pred or prey eaten, or None if nothing was eaten
-        #     if action_list:
-        #         return action_list
+        if self.currFood < (0.75 * self.maxFood):
+            actionList = self.eatPrey(
+                animalSr
+            )  #should be a list with coords and 1 or 2 depending on pred or prey eaten, or None if nothing was eaten
+            if actionList:
+                return actionList
 
-        # if self.currWater < (.75 * self.maxWater):
-        #     action_list = self.waterReact(animal_sr)
+        if self.currWater < (.75 * self.maxWater):
+            actionList = self.waterReact(animalSr)
 
-        #     if action_list:
-        #         return action_list
-        
+            if actionList:
+                return actionList
 
         if self.checkIsFertile():
-            action_list = self.reproduce(animal_sr)
+            actionList = self.reproduce(animalSr)
 
-            if action_list:
-                return action_list
-                
-          
+            if actionList:
+                return actionList
 
-        
-        
         # no action taken, so animal just moves
-        move_action = MoveAction()
-        currLocation = (self.position_x, self.position_y)
+        moveAction = MoveAction()
+        currLocation = (self.positionX, self.positionY)
         #self.random_move()
 
-        invalid_locs = animal_sr.getNearbyPrey(
-        ) + animal_sr.getNearbyPredators() + animal_sr.getNearbyWater()
-        self.random_move(invalid_locs)
+        invalidLocs = animalSr.getNearbyPrey(
+        ) + animalSr.getNearbyPredators() + animalSr.getNearbyWater()
+        self.randomMove(invalidLocs)
 
-        
-        endLocation = (self.position_x, self.position_y)
-        if endLocation not in invalid_locs:
-          move_action.setstartLocation(currLocation)
-          move_action.setendLocation(endLocation)
-          current_action_list.append(move_action)
+        endLocation = (self.positionX, self.positionY)
+        if endLocation not in invalidLocs:
+            moveAction.setstartLocation(currLocation)
+            moveAction.setendLocation(endLocation)
+            currentActionList.append(moveAction)
 
         #send out desired action to sim
-        return current_action_list
+        return currentActionList

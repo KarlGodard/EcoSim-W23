@@ -46,29 +46,29 @@ class Simulation():
 
         animal = self.map.getNextAnimal()
         while animal != None:
-            animal_sr = SensoryRange()
+            animalSr = SensoryRange()
 
             #get data surrounding animal
-            nearby_plants = self.map.getNearbyPlants(animal)
-            animal_sr.setNearbyPlants(nearby_plants)
-            nearby_predators = self.map.getNearbyPredators(animal)
-            nearby_prey = self.map.getNearbyPrey(animal)
-            animal_sr.setNearbyPredators(nearby_predators)
-            animal_sr.setNearbyPrey(nearby_prey)
-            nearby_tiles = self.map.getNearbyWater(animal)
-            nearby_viable_mates = self.map.getViableMates(animal)
-            animal_sr.setViableMates(nearby_viable_mates)
-          
-            animal_sr.setNearbyWater(nearby_tiles)
+            nearbyPlants = self.map.getNearbyPlants(animal)
+            animalSr.setNearbyPlants(nearbyPlants)
+            nearbyPredators = self.map.getNearbyPredators(animal)
+            nearbyPrey = self.map.getNearbyPrey(animal)
+            animalSr.setNearbyPredators(nearbyPredators)
+            animalSr.setNearbyPrey(nearbyPrey)
+            nearbyTiles = self.map.getNearbyWater(animal)
+            nearbyViableMates = self.map.getViableMates(animal)
+            animalSr.setNearbyMates(nearbyViableMates)
+
+            animalSr.setNearbyWater(nearbyTiles)
             temp = self.map.getTemp()
-            animal_sr.setTemp(temp)
+            animalSr.setTemp(temp)
 
             #pass data to animal and receive actions
-            animal_obj = self.map.convertIDtoAnimal(animal)
-            if animal_obj.is_prey:
-                actions = animal_obj.preyReact(animal_sr)
+            animalObj = self.map.convertIDtoAnimal(animal)
+            if animalObj.isPrey:
+                actions = animalObj.preyReact(animalSr)
             else:
-                actions = animal_obj.predReact(animal_sr)
+                actions = animalObj.predReact(animalSr)
 
             #carry out actions
 
@@ -79,36 +79,37 @@ class Simulation():
                     if action.foodType == "animal":
 
                         id = self.map.map[action.foodLocation[1]][
-                            action.foodLocation[0]].animal_id
+                            action.foodLocation[0]].animalID
                         #print("Animal " + str(id) + " eaten by " + str(animal))
                         #if id == animal:
-                            #print("Error: animal eats itself")
-                        self.map.delete_animal(id)
+                        #print("Error: animal eats itself")
+                        self.map.deleteAnimal(id)
                     elif action.foodType == "plant":
-                        self.map.delete_plant(action.foodLocation)
+                        self.map.deletePlant(action.foodLocation)
 
                 elif (action.type == "move"):
-                    if (self.map.locToTile(action.endLocation).has_prey or
-                            self.map.locToTile(action.endLocation).has_pred):
+                    if (self.map.locToTile(action.endLocation).hasPrey
+                            or self.map.locToTile(action.endLocation).hasPred):
                         continue
 
-                    self.map.move_animal(animal, action.endLocation)
+                    self.map.moveAnimal(animal, action.endLocation)
                     #position x, position y
 
                 elif (action.type == "reproduce"):
                     print("Animal born at " + str(action.birthLocation))
-                    if animal_obj.is_prey:
-                        self.map.create_prey(animal, action.birthLocation)
+                    if animalObj.isPrey:
+                        self.map.createPrey(action.birthLocation)
                     else:
-                        self.map.create_predator(animal, action.birthLocation)
+                        self.map.createPredator(action.birthLocation)
 
-                    self.map.locToAnimal(action.partnerLocation).resetReprDelay()
+                    self.map.locToAnimal(
+                        action.partnerLocation).resetReprDelay()
 
                 elif (action.type == "drink"):
                     pass  #no action needed
                 elif (action.type == "die"):
                     #print("Animal " + str(animal) + " died")
-                    self.map.delete_animal(animal)
+                    self.map.deleteAnimal(animal)
                     survives = False
                     break  #remove from map, delete animal
                 else:
@@ -116,32 +117,29 @@ class Simulation():
                     exit(1)
 
             if survives:
-                self.map.next_order.append(animal)
+                self.map.nextOrder.append(animal)
 
-            animal_obj.age += 1
-            animal_obj.reprDelay += 1
+            animalObj.age += 1
+            animalObj.reprDelay += 1
 
             #end of animal loop
             animal = self.map.getNextAnimal()
 
         #Food
-        self.map.generate_plants()
-
-        #Other Miscellanous
-        #self.map.environmental_change()
+        self.map.generatePlants()
 
     def visualize(self):
         animalMap = []
         for row in self.map.map:
             rowData = []
             for tile in row:
-                if tile.is_prey():
+                if tile.isPrey():
                     rowData.append("prey")
-                elif tile.is_pred():
+                elif tile.isPred():
                     rowData.append("pred")
-                elif tile.has_plant:
+                elif tile.hasPlant:
                     rowData.append("plant")
-                elif tile.has_water:
+                elif tile.hasWater:
                     rowData.append("water")
                 else:
                     rowData.append("grass")
@@ -149,18 +147,18 @@ class Simulation():
             animalMap.append(rowData)
 
         ## update visualization here
-        self.visualization.update_map(animalMap)
-        self.map.predator_count.append(self.map.getNumPredators())
-        self.map.prey_count.append(self.map.getNumPrey())
+        self.visualization.updateMap(animalMap)
+        self.map.predatorCount.append(self.map.getNumPredators())
+        self.map.preyCount.append(self.map.getNumPrey())
 
         ## Time before switching screens
         pygame.time.wait(800)
 
-    def run_simulation(self):
+    def runSimulation(self):
 
-        num_predators = [self.map.getNumPredators()]
-        num_prey = [self.map.getNumPrey()]
-        time_graph = [0]
+        numPredators = [self.map.getNumPredators()]
+        numPrey = [self.map.getNumPrey()]
+        timeGraph = [0]
 
         self.visualize()
 
@@ -169,9 +167,9 @@ class Simulation():
             self.simulationLoop(t)
             t += 1
             # Visualize Current Simulation State
-            time_graph.append(t)
-            num_predators.append(self.map.getNumPredators())
-            num_prey.append(self.map.getNumPrey())
+            timeGraph.append(t)
+            numPredators.append(self.map.getNumPredators())
+            numPrey.append(self.map.getNumPrey())
 
             self.visualize()
 
@@ -179,4 +177,4 @@ class Simulation():
                 if event.type == pygame.QUIT:
                     pygame.quit()
 
-        self.map.create_graph()
+        self.map.createGraph()
