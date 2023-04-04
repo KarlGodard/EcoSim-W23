@@ -11,16 +11,31 @@ from Action import DrinkAction
 
 class Prey(Animal):
 
-    def __init__(self,
+    def __init__(self, preyParams,
                  xmax,
                  ymax,
                  positionX=None,
                  positionY=None,
                  animalID=None):
-        self.currFood = random.randint(37, 75)
-        self.maxFood = 75
-        self.currWater = 75
-        self.maxWater = 75
+
+        self.maxFood = preyParams.maxFood
+        self.currFood = self.maxFood
+                   
+        self.maxWater = preyParams.maxWater
+        self.currWater = self.maxWater
+
+        self.minReproductiveAge = preyParams.minReproductiveAge
+        self.reproductiveDelay = preyParams.reproductiveDelay
+        self.waterSearchRadius = preyParams.waterSearchRadius
+        self.foodSearchRadius = preyParams.foodSearchRadius
+        self.reproductiveSearchRadius = preyParams.reproductiveSearchRadius
+        self.hungerIncreasePercentage = preyParams.hungerIncreasePercentage
+        self.thirstIncreasePercentage = preyParams.thirstIncreasePercentage
+        self.hungerDecreasePercentage = preyParams.hungerDecreasePercentage
+        self.thirstDecreasePercentage = preyParams.thirstDecreasePercentage
+        self.minReprocutiveHunger = preyParams.minReprocutiveHunger
+        self.minReproductiveThirst = preyParams.minReproductiveThirst           
+        
         self.isFemale = random.choice([0, 1])
         self.isPrey = 1
         self.isFertile = 0
@@ -36,6 +51,36 @@ class Prey(Animal):
         self.age = 0
         self.reprDelay = 0
 
+    def eatPlant(self, surroundings):
+        actionList = []
+        # nearbyFood is coordinate of nearest plant
+        nearbyPlants = surroundings.getNearbyPlants()
+  
+        if nearbyPlants == []:
+            # returns None if cannot eat plant
+            return actionList
+        for loc in nearbyPlants:
+            #eat plant if location is found adjacent to the animal
+            if (max(abs(loc[0] - self.positionX),
+                    abs(loc[1] - self.positionY)) <= 1):
+                self.currFood += (0.25 * self.maxFood)
+                # returns the coordinate of the water
+                eatAction = EatAction()
+                eatAction.setFoodType("plant")
+                eatAction.setFoodLocation(loc)
+                actionList.append(eatAction)
+                return actionList
+                      
+          #move towards the nearest food location
+          #TODO: move towards NEAREST plant, not just the first plant observed
+        invalidLocs = surroundings.getNearbyPrey(
+        ) + surroundings.getNearbyPredators() + surroundings.getNearbyWater()
+  
+        moveaction = self.genMoveAction(nearbyPlants[0], invalidLocs)
+        if moveaction is not None:
+            actionList.append(moveaction)
+        return actionList
+  
     def reproduce(self, surroundings):
         nearbyMates = surroundings.getNearbyMates()
         for i in nearbyMates:
@@ -86,11 +131,11 @@ class Prey(Animal):
         #     if actionList:
         #         return actionList
 
-        # if self.checkIsFertile():
-        #     actionList = self.reproduce(animalSr)
+        if self.checkIsFertile():
+            actionList = self.reproduce(animalSr)
 
-        #     if actionList:
-        #         return actionList
+            if actionList:
+                return actionList
 
         # if nothing happens, will randomly move
 

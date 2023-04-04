@@ -58,65 +58,10 @@ class Animal:
 
         return locsEmptyTile
 
-    def eatPrey(self, surroundings):
-        # a list of preys
-        actionList = []
-        # nearbyFood is coordinate of nearest plant
-        nearbyPrey = surroundings.getNearbyPrey()
-
-        if nearbyPrey == []:
-            # returns None if cannot eat plant
-            return actionList
-        for loc in nearbyPrey:
-            #eat plant if location is found adjacent to the animal
-            if (max(abs(loc[0] - self.positionX),
-                    abs(loc[1] - self.positionY)) <= 1):
-                self.currFood += (0.25 * self.maxFood)
-                # returns the coordinate of the water
-                eatAction = EatAction()
-                eatAction.setFoodType("animal")
-                eatAction.setFoodLocation(loc)
-                actionList.append(eatAction)
-                return actionList
-
-        #move towards the nearest food location
-        invalidLocs = surroundings.getNearbyPrey(
-        ) + surroundings.getNearbyPredators() + surroundings.getNearbyWater()
-
-        moveaction = self.genMoveAction(nearbyPrey[0], invalidLocs)
-        if moveaction is not None:
-            actionList.append(moveaction)
-        return actionList
+    
   
-    def eatPlant(self, surroundings):
-        actionList = []
-        # nearbyFood is coordinate of nearest plant
-        nearbyPlants = surroundings.getNearbyPlants()
+   
 
-        if nearbyPlants == []:
-            # returns None if cannot eat plant
-            return actionList
-        for loc in nearbyPlants:
-            #eat plant if location is found adjacent to the animal
-            if (max(abs(loc[0] - self.positionX),
-                    abs(loc[1] - self.positionY)) <= 1):
-                self.currFood += (0.25 * self.maxFood)
-                # returns the coordinate of the water
-                eatAction = EatAction()
-                eatAction.setFoodType("plant")
-                eatAction.setFoodLocation(loc)
-                actionList.append(eatAction)
-                return actionList
-
-        #move towards the nearest food location
-        #TODO: move towards NEAREST plant, not just the first plant observed
-        invalidLocs = surroundings.getNearbyPrey(
-        ) + surroundings.getNearbyPredators() + surroundings.getNearbyWater()
-
-        moveaction = self.genMoveAction(nearbyPlants[0], invalidLocs)
-        if moveaction is not None:
-            actionList.append(moveaction)
-        return actionList
 
     def genMoveAction(self, target, invalidLocs):
         dx = -1

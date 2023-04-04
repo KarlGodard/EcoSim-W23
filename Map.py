@@ -8,6 +8,7 @@ import math
 import numpy as np
 import copy
 import matplotlib.pyplot as plt
+from AnimalParams import SimulationParams, MapParams, AnimalParams
 
 # different dictionaries for each variable and then
 # we pass in a coordinate to determine what is there
@@ -17,13 +18,16 @@ import matplotlib.pyplot as plt
 
 class Map:
     #called in Simulation
-    def __init__(self, mapSize, startingTemp, rateOfTempChange,
-                 startingAnimalDistribution):
-        self.mapSize = mapSize  #tuple
-        self.sizeX = mapSize[0]
-        self.sizeY = mapSize[1]
-        self.startTemp = startingTemp
-        self.currTemp = startingTemp
+    def __init__(self, mapParams, predatorParams, preyParams):
+        self.mapParams = mapParams
+        self.predatorParams = predatorParams
+        self.preyParams = preyParams
+
+        self.sizeX = mapParams.sizeX
+        self.sizeY = mapParams.sizeY
+        self.mapSize = (mapParams.sizeX, mapParams.sizeY)  #tuple
+
+        self.currTemp = mapParams.temp
         self.numAnimals = 0
         self.numPredators = 0
         self.numPrey = 0
@@ -98,8 +102,7 @@ class Map:
             # generating extra dimensions so pond isn't square
             shift = int(random.randint(-2, 2))
             for j in range(height):
-                if (yCord + i < self.sizeY
-                        and xCord + j + shift < self.sizeX):
+                if (yCord + i < self.sizeY and xCord + j + shift < self.sizeX):
                     self.map[yCord + i][xCord + j + shift].setWater()
 
     def generateInitialPlants(self):
@@ -150,7 +153,8 @@ class Map:
         # loc is pass in as "x, y"
         x = loc[0]
         y = loc[1]
-        newPred = Predator(self.sizeX, self.sizeY, x, y, self.animalID)
+        newPred = Predator(self.predatorParams, self.sizeX, self.sizeY, x, y,
+                           self.animalID)
         self.IDtoAnimal[self.animalID] = newPred
         self.IDtoLoc[self.animalID] = loc
         self.nextOrder.append(self.animalID)
@@ -169,7 +173,8 @@ class Map:
         x = loc[0]
         y = loc[1]
 
-        newPrey = Prey(self.sizeX, self.sizeY, x, y, self.animalID)
+        newPrey = Prey(self.preyParams, self.sizeX, self.sizeY, x, y,
+                       self.animalID)
         self.IDtoLoc[self.animalID] = loc
         self.IDtoAnimal[self.animalID] = newPrey
         self.nextOrder.append(self.animalID)

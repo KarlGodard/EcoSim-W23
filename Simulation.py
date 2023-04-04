@@ -10,6 +10,8 @@ import numpy as np
 from Visualization import Visualization
 import time
 import pygame
+from AnimalParams import SimulationParams, MapParams, AnimalParams
+
 # animal movement showing up on the grid
 # animal interaction
 # boundaries for map and animal movement
@@ -18,27 +20,14 @@ import pygame
 
 class Simulation():
 
-    def __init__(self,
-                 mapSize=(300, 200),
-                 startingTemp=70,
-                 rateOfTempChange=1,
-                 numStartingAnimals=50,
-                 startingAnimalDistribution=[0.5, 0.5],
-                 simulationLength=100):
-
-        self.mapSize = mapSize
-        # self.percentWaterTiles = percentWaterTiles
-        self.startingTemp = startingTemp
-        self.rateOfTempChange = rateOfTempChange
-        self.numStartingAnimals = numStartingAnimals
-        self.startingAnimalDistribution = startingAnimalDistribution
-        self.simulationLength = simulationLength
-        # self.visualization = Visualization()
-        self.map = Map(self.mapSize, self.startingTemp, self.rateOfTempChange,
-                       self.startingAnimalDistribution)
-
-        self.iteration = 0
-
+    def __init__(self, simulationParams, mapParams, predatorParams,
+                 preyParams):
+        self.simulationParams = simulationParams
+        self.mapParams = mapParams
+        self.predatorParams = predatorParams
+        self.preyParams = preyParams
+        self.mapSize = (mapParams.sizeX, mapParams.sizeY)
+        self.map = Map(self.mapParams, self.predatorParams, self.preyParams)
         self.visualization = Visualization(self.mapSize)
 
     def simulationLoop(self, t):
@@ -163,7 +152,7 @@ class Simulation():
         self.visualize()
 
         t = 0
-        while t < self.simulationLength:
+        while t < self.simulationParams.simulationLength:
             self.simulationLoop(t)
             t += 1
             # Visualize Current Simulation State
