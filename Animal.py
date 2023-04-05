@@ -6,12 +6,13 @@ from Action import EatAction
 from Action import MoveAction
 from Action import ReproduceAction
 from Action import DrinkAction
+from AnimalParams import SimulationParams, MapParams, AnimalParams
 
 
 class Animal:
 
-    def __init__(self):
-        pass
+    def __init__(self, animalParams):
+        self.animalParams = animalParams
 
     def move(self, dx, dy, xmax, ymax):
         # print out of bounds statement for edges
@@ -26,15 +27,17 @@ class Animal:
         if self.currFood <= 0 or self.currWater <= 0:
             self.kill()
 
-    def randomMove(self, invalidLocs=[]):
-        dx = random.choice([-1, 0, 1])
-        dy = random.choice([-1, 0, 1])
+    def randomMove(self, surroundings):
+        emptyLocations = self.getOpenTiles(surroundings)
+        if not emptyLocations:
+            return None
 
-        while (dx + self.positionX, dy + self.positionY) in invalidLocs:
-            dx = random.choice([-1, 0, 1])
-            dy = random.choice([-1, 0, 1])
+        move = random.choice(emptyLocations)
 
-        return self.move(dx, dy, self.xmax, self.ymax)
+        self.positionX = move[0]
+        self.positionY = move[1]
+
+        return move
 
     def setRandomLocation(self):
         xLoc = random.randint(0, self.xmax - 1)
@@ -53,15 +56,12 @@ class Animal:
         maxY = min(self.ymax, loc[1] + searchDist + 1)
         for i in range(minX, maxX):
             for j in range(minY, maxY):
-                if (i,j) not in surroundings.getNearbyPrey() and (i,j) not in surroundings.getNearbyPredators() and (i,j) not in surroundings.getNearbyWater():
+                if (i, j) not in surroundings.getNearbyPrey() and (
+                        i, j) not in surroundings.getNearbyPredators() and (
+                            i, j) not in surroundings.getNearbyWater():
                     locsEmptyTile.append((i, j))
 
         return locsEmptyTile
-
-    
-  
-   
-
 
     def genMoveAction(self, target, invalidLocs):
         dx = -1
@@ -96,9 +96,10 @@ class Animal:
             return actionList
 
         for loc in nearbyWater:
-            if (max(abs(loc[0] - self.positionX),
-                    abs(loc[1] - self.positionY)) <= 1):
-                self.currWater += (0.25 * self.maxWater)
+            if (max(abs(loc[0] - self.positionX), abs(loc[1] - self.positionY))
+                    <= 1):
+                self.currWater += (self.animalParams.thirstDecreasePercentage *
+                                   self.maxWater)
                 # returns the coordinate of the water
                 drinkAction = DrinkAction()
                 actionList.append(drinkAction)
@@ -114,9 +115,11 @@ class Animal:
         return actionList
 
     def checkIsFertile(self):
-        if self.currFood < (self.maxFood * 0.75) or self.currWater < (
-                self.maxWater * 0.75
-        ) or self.age < 10 or self.reprDelay < 5:  #changed from 0.5
+        if self.currFood < (
+                self.maxFood * self.animalParams.minReproductiveHunger
+        ) or self.currWater < (
+                self.maxWater * self.animalParams.minReproductiveThirst
+        ) or self.age < self.animalParams.minReproductiveAge or self.reprDelay < self.animalParams.reproductiveDelay:  #changed from 0.5
             self.isFertile = 0
         else:
             self.isFertile = 1

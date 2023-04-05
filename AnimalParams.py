@@ -27,6 +27,6 @@ class AnimalParams():
         self.thirstIncreasePercentage = .03
         self.hungerDecreasePercentage = .25
         self.thirstDecreasePercentage = .25
-        self.minReprocutiveHunger = .50
+        self.minReproductiveHunger = .50
         self.minReproductiveThirst = .50
         

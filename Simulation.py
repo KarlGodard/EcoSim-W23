@@ -141,7 +141,7 @@ class Simulation():
         self.map.preyCount.append(self.map.getNumPrey())
 
         ## Time before switching screens
-        pygame.time.wait(800)
+        pygame.time.wait(self.simulationParams.simulationSpeed)
 
     def runSimulation(self):
 

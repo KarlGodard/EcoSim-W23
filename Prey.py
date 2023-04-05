@@ -7,11 +7,13 @@ from Action import EatAction
 from Action import MoveAction
 from Action import ReproduceAction
 from Action import DrinkAction
+from AnimalParams import SimulationParams, MapParams, AnimalParams
 
 
 class Prey(Animal):
 
-    def __init__(self, preyParams,
+    def __init__(self,
+                 preyParams,
                  xmax,
                  ymax,
                  positionX=None,
@@ -20,7 +22,7 @@ class Prey(Animal):
 
         self.maxFood = preyParams.maxFood
         self.currFood = self.maxFood
-                   
+
         self.maxWater = preyParams.maxWater
         self.currWater = self.maxWater
 
@@ -33,9 +35,8 @@ class Prey(Animal):
         self.thirstIncreasePercentage = preyParams.thirstIncreasePercentage
         self.hungerDecreasePercentage = preyParams.hungerDecreasePercentage
         self.thirstDecreasePercentage = preyParams.thirstDecreasePercentage
-        self.minReprocutiveHunger = preyParams.minReprocutiveHunger
-        self.minReproductiveThirst = preyParams.minReproductiveThirst           
-        
+
+
         self.isFemale = random.choice([0, 1])
         self.isPrey = 1
         self.isFertile = 0
@@ -50,37 +51,38 @@ class Prey(Animal):
         self.ymax = ymax
         self.age = 0
         self.reprDelay = 0
+        super().__init__(preyParams)
 
     def eatPlant(self, surroundings):
         actionList = []
         # nearbyFood is coordinate of nearest plant
         nearbyPlants = surroundings.getNearbyPlants()
-  
+
         if nearbyPlants == []:
             # returns None if cannot eat plant
             return actionList
         for loc in nearbyPlants:
             #eat plant if location is found adjacent to the animal
-            if (max(abs(loc[0] - self.positionX),
-                    abs(loc[1] - self.positionY)) <= 1):
-                self.currFood += (0.25 * self.maxFood)
+            if (max(abs(loc[0] - self.positionX), abs(loc[1] - self.positionY))
+                    <= 1):
+                self.currFood += (self.hungerDecreasePercentage * self.maxFood)
                 # returns the coordinate of the water
                 eatAction = EatAction()
                 eatAction.setFoodType("plant")
                 eatAction.setFoodLocation(loc)
                 actionList.append(eatAction)
                 return actionList
-                      
-          #move towards the nearest food location
-          #TODO: move towards NEAREST plant, not just the first plant observed
+
+        #move towards the nearest food location
+        #TODO: move towards NEAREST plant, not just the first plant observed
         invalidLocs = surroundings.getNearbyPrey(
         ) + surroundings.getNearbyPredators() + surroundings.getNearbyWater()
-  
+
         moveaction = self.genMoveAction(nearbyPlants[0], invalidLocs)
         if moveaction is not None:
             actionList.append(moveaction)
         return actionList
-  
+
     def reproduce(self, surroundings):
         nearbyMates = surroundings.getNearbyMates()
         for i in nearbyMates:
@@ -105,31 +107,31 @@ class Prey(Animal):
         #print(self.currFood)
         # make use_resource function: use food and water (small amts) for any action; call it here
 
-        # self.currWater -= self.maxWater * 0.05
-        # self.currFood -= self.maxFood * 0.05
+        self.currWater -= self.maxWater * self.thirstIncreasePercentage
+        self.currFood -= self.maxFood * self.hungerIncreasePercentage
         currentActionList = []
 
         self.checkState()  #check if it is alive
         #self.tempReact(animal_sr)
-        # if self.alive == 0:
-        #     #del(self) #don't need this anymore
-        #     dieAction = DieAction()
-        #     currentActionList.append(dieAction)
-        #     return currentActionList
-        #     # tell sim to delete self
+        if self.alive == 0:
+            #del(self) #don't need this anymore
+            dieAction = DieAction()
+            currentActionList.append(dieAction)
+            return currentActionList
+            # tell sim to delete self
 
-        # if self.currFood < (0.75 * self.maxFood):
-        #     actionList = self.eatPlant(
-        #         animalSr
-        #     )  #should be a list with coords of plant and 2, or None if nothing was eaten
+        if self.currFood < (0.75 * self.maxFood):
+            actionList = self.eatPlant(
+                animalSr
+            )  #should be a list with coords of plant and 2, or None if nothing was eaten
 
-        #     if actionList:
-        #         return actionList
+            if actionList:
+                return actionList
 
-        # if self.currWater < (.75 * self.maxWater):
-        #     actionList = self.waterReact(animalSr)
-        #     if actionList:
-        #         return actionList
+        if self.currWater < (.75 * self.maxWater):
+            actionList = self.waterReact(animalSr)
+            if actionList:
+                return actionList
 
         if self.checkIsFertile():
             actionList = self.reproduce(animalSr)
@@ -142,16 +144,13 @@ class Prey(Animal):
         moveAction = MoveAction()
         currLocation = (self.positionX, self.positionY)
 
-        invalidLocs = animalSr.getNearbyPrey(
-        ) + animalSr.getNearbyPredators() + animalSr.getNearbyWater(
-        ) + animalSr.getNearbyPlants()
+        endLocation = self.randomMove(animalSr)
 
-        self.randomMove(invalidLocs)
+        if endLocation == None:
+            return []
 
-        endLocation = (self.positionX, self.positionY)
-        if endLocation not in invalidLocs:
-            moveAction.setstartLocation(currLocation)
-            moveAction.setendLocation(endLocation)
-            currentActionList.append(moveAction)
+        moveAction.setstartLocation(currLocation)
+        moveAction.setendLocation(endLocation)
+        currentActionList.append(moveAction)
 
         return currentActionList
