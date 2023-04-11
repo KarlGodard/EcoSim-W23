@@ -6,8 +6,8 @@ simulationParams.simulationLength = 200
 simulationParams.simulationSpeed = 200  #delay in ms
 
 mapParams = MapParams()
-mapParams.sizeX = 50
-mapParams.sizeY = 30
+mapParams.sizeX = 80
+mapParams.sizeY = 50
 mapParams.percentWaterCoverage = 30
 mapParams.numStartingPredators = 20
 mapParams.numStartingPrey = 30
@@ -41,8 +41,8 @@ preyParams.hungerIncreasePercentage = 0.03
 preyParams.thirstIncreasePercentage = 0.03
 preyParams.hungerDecreasePercentage = 0.25
 preyParams.thirstDecreasePercentage = 0.25
-preyParams.minReprocutiveHunger = 0.50
-preyParams.minReproductiveThirst = 0.50
+preyParams.minReproductiveHunger = 0.30
+preyParams.minReproductiveThirst = 0.30
 
 simulation = Simulation(simulationParams, mapParams, predatorParams,
                         preyParams)
