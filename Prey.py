@@ -21,7 +21,7 @@ class Prey(Animal):
                  animalID=None):
 
         self.maxFood = preyParams.maxFood
-        self.currFood = self.maxFood
+        self.currFood = 20
 
         self.maxWater = preyParams.maxWater
         self.currWater = self.maxWater

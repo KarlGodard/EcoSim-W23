@@ -35,6 +35,28 @@ class Map:
         self.map = [[Tile() for i in range(self.sizeX)]
                     for j in range(self.sizeY)]
         self.riverMaker()
+        self.riverMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+
+        self.riverMaker()
+        self.riverMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
+
+        self.riverMaker()
+        self.riverMaker()
+        self.pondMaker()
+        self.pondMaker()
+        self.pondMaker()
         self.pondMaker()
         self.pondMaker()
         self.pondMaker()
@@ -109,7 +131,7 @@ class Map:
         self.generatePlants(.85)
         return
 
-    def generatePlants(self, threshhold=.99):
+    def generatePlants(self, threshhold=.95):
         # if t = 0, use 0.90 for p threshoold. otherwise use 0.99
         for i in range(self.sizeX):
             for j in range(self.sizeY):

@@ -21,7 +21,7 @@ class Predator(Animal):
                  animalID=None):
 
         self.maxFood = predatorParams.maxFood
-        self.currFood = self.maxFood
+        self.currFood = 20
         self.maxWater = predatorParams.maxWater
         self.currWater = self.maxWater
 
@@ -120,14 +120,14 @@ class Predator(Animal):
             return currentActionList
             # tell sim to delete self
 
-        if self.currFood < (0.75 * self.maxFood):
+        if self.currFood < (0.60 * self.maxFood):
             actionList = self.eatPrey(
                 animalSr
             )  #should be a list with coords and 1 or 2 depending on pred or prey eaten, or None if nothing was eaten
             if actionList:
                 return actionList
 
-        if self.currWater < (.75 * self.maxWater):
+        if self.currWater < (.60 * self.maxWater):
             actionList = self.waterReact(animalSr)
 
             if actionList:
