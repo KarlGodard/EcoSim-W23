@@ -94,6 +94,8 @@ class Predator(Animal):
             reproduceAction.setAnimalType("pred")
 
             openTiles = self.getOpenTiles(surroundings)
+            if not openTiles:
+                return []
             reproduceAction.setBirthLocation(random.choice(openTiles))
             reproduceAction.setPartnerLocation(i)
 
@@ -110,7 +112,7 @@ class Predator(Animal):
         self.currFood -= self.maxFood * self.hungerIncreasePercentage
         currentActionList = []
 
-        # self.checkState()  #check if it is alive
+        self.checkState()  #check if it is alive
         # #self.tempReact()
         if not self.alive:
             dieAction = DieAction()

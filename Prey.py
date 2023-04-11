@@ -36,7 +36,6 @@ class Prey(Animal):
         self.hungerDecreasePercentage = preyParams.hungerDecreasePercentage
         self.thirstDecreasePercentage = preyParams.thirstDecreasePercentage
 
-
         self.isFemale = random.choice([0, 1])
         self.isPrey = 1
         self.isFertile = 0
@@ -95,6 +94,8 @@ class Prey(Animal):
             reproduceAction.setAnimalType("prey")
 
             openTiles = self.getOpenTiles(surroundings)
+            if not openTiles:
+                return []
             reproduceAction.setBirthLocation(random.choice(openTiles))
             reproduceAction.setPartnerLocation(i)
 

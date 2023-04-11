@@ -131,23 +131,64 @@ class Map:
         return
 
     def initializeAnimals(self):
+        remainPred = self.mapParams.numStartingPredators
+        remainPrey = self.mapParams.numStartingPrey
+        remainTile = self.sizeX * self.sizeY
+        quit = False
         for i in range(self.sizeX):
             for j in range(self.sizeY):
                 if self.map[j][i].hasWater:
                     continue
-                p1 = .1
-                p2 = 0.05
-                newPredator = (np.random.rand() < p1)  #bernoulli(p1)
-                newPrey = (np.random.rand() < p2)  #bernoulli(p2)
+                p1 = remainPred / (remainTile)
+                p2 = (remainPred + remainPrey) / remainTile
+                p = np.random.rand()
+                newPredator = (p < p1)  #bernoulli(p1)
+                newPrey = (p < p2)  #bernoulli(p2)
                 location = (i, j)
                 if (newPredator == 1):
-                    newPrey = False
+                    remainPred -= 1
+                    #newPrey = False
                     self.createPredator(location)
-                if (newPrey == 1):
+                elif newPrey:
+                    remainPrey -= 1
                     self.createPrey(location)
+                remainTile -= 1
+                if (remainPred == 0 and remainPrey == 0):
+                    quit = True
+                    break
+            if quit:
+                break
         self.currentOrder = copy.deepcopy(self.nextOrder)
         self.nextOrder = []
         return
+
+    def initializeExactNum(self, freeTiles):
+        for i in range(self.mapParams.numStartingPredators):
+            if not freeTiles:
+                exit()
+            newTile = random.choice(freeTiles)
+            freeTiles.remove(newTile)
+            createPredator(self.loc)
+
+        for i in range(self.mapParams.numStartingPrey):
+            if not freeTiles:
+                exit()
+            newTile = random.choice(freeTiles)
+            freeTiles.remove(newTile)
+            createPrey(self.loc)
+
+        self.currentOrder = copy.deepcopy(self.nextOrder)
+        self.nextOrder = []
+
+    def getFreeTiles(self):
+        freeTiles = []
+        for i in range(self.sizeX):
+            for j in range(self.sizeY):
+                if not self.map[j][i].hasWater and not self.map[j][
+                        i].hasPred and not self.map[j][i].hasWater.hasPrey:
+                    freeTiles.append((i, j))
+
+        return freeTiles
 
     def createPredator(self, loc):
         # loc is pass in as "x, y"
@@ -255,7 +296,7 @@ class Map:
         loc = self.convertIDtoLoc(animalID)
         locsWithFood = []
         # search distance
-        searchDist = 2
+        searchDist = self.preyParams.foodSearchRadius
         minX = max(0, loc[0] - searchDist)
         maxX = min(self.sizeX, loc[0] + searchDist + 1)
         minY = max(0, loc[1] - searchDist)
@@ -268,10 +309,14 @@ class Map:
         return locsWithFood
 
     def getNearbyPredators(self, animalID):
+        animal = self.IDtoAnimal[animalID]
         loc = self.convertIDtoLoc(animalID)
         locsWithPredators = []
 
-        searchDist = 2
+        if animal.isPrey:
+            searchDist = self.preyParams.predatorSearchRadius
+        else:
+            searchDist = self.predatorParams.reproductiveSearchRadius
         minX = max(0, loc[0] - searchDist)
         maxX = min(self.sizeX, loc[0] + searchDist + 1)
         minY = max(0, loc[1] - searchDist)
@@ -284,10 +329,15 @@ class Map:
         return locsWithPredators
 
     def getNearbyPrey(self, animalID):
+        animal = self.IDtoAnimal[animalID]
         loc = self.convertIDtoLoc(animalID)
         locsWithPrey = []
 
-        searchDist = 2
+        if animal.isPrey:
+            searchDist = self.preyParams.reproductiveSearchRadius
+        else:
+            searchDist = self.predatorParams.foodSearchRadius
+
         minX = max(0, loc[0] - searchDist)
         maxX = min(self.sizeX, loc[0] + searchDist + 1)
         minY = max(0, loc[1] - searchDist)
@@ -300,10 +350,15 @@ class Map:
         return locsWithPrey
 
     def getNearbyWater(self, animalID):
+        animal = self.IDtoAnimal[animalID]
         loc = self.convertIDtoLoc(animalID)
         locsWithWater = []
         # search distance
-        searchDist = 2
+        if animal.isPrey:
+            searchDist = self.preyParams.waterSearchRadius
+        else:
+            searchDist = self.predatorParams.waterSearchRadius
+
         minX = max(0, loc[0] - searchDist)
         maxX = min(self.sizeX, loc[0] + searchDist + 1)
         minY = max(0, loc[1] - searchDist)
@@ -322,7 +377,10 @@ class Map:
         loc = self.convertIDtoLoc(animalID)
         locsWithMate = []
         # search distance
-        searchDist = 2
+        if animal.isPrey:
+            searchDist = self.preyParams.reproductiveSearchRadius
+        else:
+            searchDist = self.predatorParams.reproductiveSearchRadius
         minX = max(0, loc[0] - searchDist)
         maxX = min(self.sizeX, loc[0] + searchDist + 1)
         minY = max(0, loc[1] - searchDist)

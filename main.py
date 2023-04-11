@@ -2,7 +2,7 @@ from Simulation import Simulation
 from AnimalParams import SimulationParams, MapParams, AnimalParams
 
 simulationParams = SimulationParams()
-simulationParams.simulationLength = 40
+simulationParams.simulationLength = 200
 simulationParams.simulationSpeed = 200  #delay in ms
 
 mapParams = MapParams()
@@ -17,16 +17,16 @@ predatorParams = AnimalParams()
 predatorParams.maxFood = 100
 predatorParams.maxWater = 100
 predatorParams.minReproductiveAge = 5
-predatorParams.reproductiveDelay = 5
+predatorParams.reproductiveDelay = 3
 predatorParams.waterSearchRadius = 2
-predatorParams.foodSearchRadius = 2
-predatorParams.reproductiveSearchRadius = 2
-predatorParams.hungerIncreasePercentage = 0.10
-predatorParams.thirstIncreasePercentage = 0.10
+predatorParams.foodSearchRadius = 3
+predatorParams.reproductiveSearchRadius = 4
+predatorParams.hungerIncreasePercentage = 0.03
+predatorParams.thirstIncreasePercentage = 0.03
 predatorParams.hungerDecreasePercentage = 0.25
 predatorParams.thirstDecreasePercentage = 0.25
-predatorParams.minReproductiveHunger = .70
-predatorParams.minReproductiveThirst = .70
+predatorParams.minReproductiveHunger = .50
+predatorParams.minReproductiveThirst = .50
 
 preyParams = AnimalParams()
 preyParams.maxFood = 100
@@ -35,7 +35,8 @@ preyParams.minReproductiveAge = 5
 preyParams.reproductiveDelay = 4
 preyParams.waterSearchRadius = 2
 preyParams.foodSearchRadius = 2
-preyParams.reproductiveSearchRadius = 2
+preyParams.predatorSearchRadius = 3
+preyParams.reproductiveSearchRadius = 4
 preyParams.hungerIncreasePercentage = 0.03
 preyParams.thirstIncreasePercentage = 0.03
 preyParams.hungerDecreasePercentage = 0.25
