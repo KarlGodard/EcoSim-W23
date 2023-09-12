@@ -20,21 +20,21 @@ In the main.py file, there are many parameters you can change to modify the simu
 
 **Map Params**
 * sizeX, sizeY - size of simulation grid
-* percentWaterCoverage
-* numStartingPredators, numStartingPrey
-* temp
+* percentWaterCoverage - controls percentage of water tiles on the map (functionality not yet implemented)
+* numStartingPredators, numStartingPrey - controls size of intitial population of predators and prey
+* temp - global map temperature, intended to affect plant growth (functionality not yet implemented)
 
 **Predator/Prey Params**
-* maxFood
-* naxWater
-* minReproductiveAge
-* reproductiveDelay
-* waterSearchRadius
-* reproductiveSearchRadius
-* hungerIncreasePercentage/hungerDecreasePercentage
-* thirstIncreasePercentage/
-* minReproductiveHunger
-* minReproductiveThirst
+* maxFood - maximum food level for animal
+* maxWater - maximum water level for animal
+* minReproductiveAge - minimum number of iterations after an animal is born before it can reproduce
+* reproductiveDelay - minimum number of iterations before an animal can reproduce again
+* waterSearchRadius - distance in tiles in which an animal can sense water
+* reproductiveSearchRadius - distance in tiles in which an animal can detect viable mates
+* hungerIncreasePercentage/hungerDecreasePercentage - rate at which animal hunger increases (note: increase in hunger = decrease in food level)
+* thirstIncreasePercentage/thirstDecreasePercentage - rate at which animal thirst increases (note: increase in thirst = decrease in water level)
+* minReproductiveHunger - minimum food level at which an animal can reproduce
+* minReproductiveThirst - minimum water level at which an animal can reproduce
 
 
 
@@ -80,7 +80,7 @@ Once all animals have been given the opportunity to act, new plants are generate
 Lastly, the visualize() function passes data about the state of the map to the Visualization class, which then proceeds with drawing that information to the user's screen. 
 
 
-
+##### TODO: continue work on walkthrough
 
 Now, look to Animal class and either the Predator or Prey class.
 
