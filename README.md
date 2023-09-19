@@ -63,7 +63,7 @@ In the main.py file, there are many parameters you can change to modify the simu
 
 ### Getting oriented with the simulation
 
-First, check out the file Simulation.py
+#### Simulation.py
 
 In this file you'll find a class with three functions (in addition to the constructor), simulationLoop, visualize, and runSimulation.
 
@@ -80,14 +80,37 @@ Once all animals have been given the opportunity to act, new plants are generate
 Lastly, the visualize() function passes data about the state of the map to the Visualization class, which then proceeds with drawing that information to the user's screen. 
 
 
-##### TODO: continue work on walkthrough
+#### Animals
 
-Now, look to Animal class and either the Predator or Prey class.
+Now, look to Animal, Predator and Prey classes. The Animal class is the parent class of Predator and Prey (for more on inheritence, see https://www.geeksforgeeks.org/inheritance-in-python/)
 
-Next, review the Map class
+Scroll first through the Animal class to view the various functions that describe functionality shared between predators and prey. Then pick either the Predator or Prey class and scroll down to view the PredRead or PreyReact function. In this function you'll find the logic that dictates how an animal behaves at each step of the information.
 
-Finally, look to the Visualization class
+Each function takes a parameter called animalSr, which contains information about the map contained within that animal's sensory range. In the first few lines, you can see that the animal's current water and food levels decrease at the start of its turn. The function then progresses through a series of checks to determine what action the animal should take; if the animal is hungry and food is available, the animal should prioritize eating. If this is not the case, we then check if the animal is thirsty and water is available. We proceed likewise through searching for viable mates, and if none of the above options are available the animal picks a random direction to move in. 
 
+Regardless of what action the animal decides to make, it stores the information about its decision in an Action object, which it passes through the return statement back to Simulation.py, which handles executing the consequences of that action (deleting food off the map, spawning new animal, etc).
+
+### Map
+
+The map at its core is a 2-dimensional array (list) of Tile objects. Whenever we want to update something on the map, we first index into the appropriate place in the map and then update the stored information at that tile.
+
+Note that map is indexed first with the y-coordinate followed by the x-coordinate. For example, to access the tile at (x,y), we use
+
+```
+self.map[y][x]
+```
+
+For the purposes of tracking animals across the map, each animal is given a unique identifier, its animalID. The first animalID assigned is 0, and the next animalID is incremented every time a new animal is created. With this unique identifier, we can now have a dictionary that maps each animalID to its underlying animal object, and this animalID can be used to easily reference that object at all other places throughout the map class. 
+
+The map file contains a number of other functions that aid with maintaining the proper state of the map. These include functions for:
+* Adding/deleting animals
+* Moving animals
+* Generating water on the map
+* Retrieving information about the animals/plants within a certain region of the map
+
+The Map class also importantly maintains information about the order in which animals are set to act. It does this with two separate arrays, currentOrder and nextOrder. To picture why two separate arrays are useful, imagine first using only one array. In this array we would have a list of animals, as well as a counter that keeps of where in the array the currently acting animal is. Everytime an animal is born or dies, we have to add onto or remove from this array, meaning that an animal could end at a totally different index in the array from where it started. And instead of simply incrementing the counter each turn, an animal could die on its own turn, meaning the animal would be removed from the list and the counter should stay in place. 
+
+To make simplify this issue, we maintain two separate lists, one for the current iteration of the simulation and one for the next iteration of the simulation. At the start of an iteration, the currentOrder list contains the animalId's of all animals in the simulation. We then progress through currentOrder one animal at a time. If the animal lives, its appended to the nextOrder list. When an animal is born, it is added to the nextOrder list. When an animal that has already acted is killed, it is removed from nextOrder. When an animal that has not yet acted is killed, it is removed from currentOrder so that its not given the chance to act. When the current animal is killed, the counter simply is incremented to the next animal in current order, and the killed animal is not added to nextOrder. In this way, the current state of all the animals alive in the simulation is more easily maintained. 
 
 ### Common confusion points
 

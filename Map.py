@@ -190,14 +190,14 @@ class Map:
                 exit()
             newTile = random.choice(freeTiles)
             freeTiles.remove(newTile)
-            createPredator(self.loc)
+            self.createPredator(self.loc)
 
         for i in range(self.mapParams.numStartingPrey):
             if not freeTiles:
                 exit()
             newTile = random.choice(freeTiles)
             freeTiles.remove(newTile)
-            createPrey(self.loc)
+            self.createPrey(self.loc)
 
         self.currentOrder = copy.deepcopy(self.nextOrder)
         self.nextOrder = []
@@ -206,8 +206,7 @@ class Map:
         freeTiles = []
         for i in range(self.sizeX):
             for j in range(self.sizeY):
-                if not self.map[j][i].hasWater and not self.map[j][
-                        i].hasPred and not self.map[j][i].hasWater.hasPrey:
+                if not self.map[j][i].hasWater and not self.map[j][i].hasPred and not self.map[j][i].hasWater.hasPrey:
                     freeTiles.append((i, j))
 
         return freeTiles
@@ -226,8 +225,8 @@ class Map:
         #set animal_id
         self.map[y][x].animalID = self.animalID
 
-        self.animalID = self.animalID + 1
-        self.numAnimals = self.numAnimals + 1
+        self.animalID += 1
+        self.numAnimals += 1
         self.numPredators += 1
 
         return
@@ -246,8 +245,8 @@ class Map:
         #set animal_id
         self.map[y][x].animalID = self.animalID
 
-        self.animalID = self.animalID + 1
-        self.numAnimals = self.numAnimals + 1
+        self.animalID += 1
+        self.numAnimals += 1
         self.numPrey += 1
         return
 
