@@ -112,10 +112,6 @@ The Map class also importantly maintains information about the order in which an
 
 To make simplify this issue, we maintain two separate lists, one for the current iteration of the simulation and one for the next iteration of the simulation. At the start of an iteration, the currentOrder list contains the animalId's of all animals in the simulation. We then progress through currentOrder one animal at a time. If the animal lives, its appended to the nextOrder list. When an animal is born, it is added to the nextOrder list. When an animal that has already acted is killed, it is removed from nextOrder. When an animal that has not yet acted is killed, it is removed from currentOrder so that its not given the chance to act. When the current animal is killed, the counter simply is incremented to the next animal in current order, and the killed animal is not added to nextOrder. In this way, the current state of all the animals alive in the simulation is more easily maintained. 
 
-### Common confusion points
-
-
-Animal queueing (current_order vs next_order):
 
 
 
